@@ -1,0 +1,11 @@
+{
+  "id": "bar-social-dining",
+  "displayName": "Bar & Social Dining",
+  "vertical": [
+    "FOOD_AND_DINING"
+  ],
+  "purpose": [
+    "LOCATION"
+  ],
+  "pageSetType": "ENTITY"
+}

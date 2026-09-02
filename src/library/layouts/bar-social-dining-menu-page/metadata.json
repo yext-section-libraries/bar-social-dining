@@ -1,0 +1,11 @@
+{
+  "id": "bar-social-dining-menu-page",
+  "displayName": "Bar & Social Dining (Menu Page)",
+  "vertical": [
+    "FOOD_AND_DINING"
+  ],
+  "purpose": [
+    "CITATION"
+  ],
+  "pageSetType": "ENTITY"
+}
