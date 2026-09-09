@@ -11,6 +11,7 @@ import {
   useAnalytics,
 } from "@yext/pages-components";
 import {
+  Background,
   ComprehensiveCTA,
   type ComprehensiveCTAValue,
   EntityField,
@@ -27,12 +28,18 @@ import {
   type YextEntityField,
   type YextFields,
   getAnalyticsScopeHash,
+  getSurfaceColorStyle,
+  getThemeColorCssValue,
   i18nComponentsInstance,
-  isDarkColor,
   normalizeLink,
   resolveComponentData,
   useDocument,
 } from "@yext/visual-editor";
+import { aspectRatioOptions } from "../shared/fieldOptions";
+import {
+  getReadableForegroundColor,
+  hasExplicitThemeColor,
+} from "../shared/sectionStyles";
 
 type SharedHeaderVariant =
   | "centerLogoSplitNav"
@@ -146,62 +153,6 @@ const defaultUtilityIconImage: SharedHeaderAction["iconImage"] = {
   },
 };
 
-const hasExplicitThemeColor = (color?: ThemeColor): color is ThemeColor => {
-  return Boolean(color?.selectedColor && color.selectedColor !== "default");
-};
-
-const getReadableForegroundColor = (
-  surfaceColor: ThemeColor,
-  streamDocument?: StreamDocument,
-): ThemeColor => {
-  return {
-    selectedColor: isDarkColor(surfaceColor, streamDocument)
-      ? "white"
-      : "black",
-    contrastingColor: surfaceColor.selectedColor,
-  };
-};
-
-const resolveThemeColorCssValue = (color?: ThemeColor): string | undefined => {
-  if (!hasExplicitThemeColor(color)) {
-    return undefined;
-  }
-
-  const customColorMatch = color.selectedColor.match(
-    /^\[(#[0-9A-Fa-f]{3,8})\]$/,
-  );
-  if (customColorMatch) {
-    return customColorMatch[1].toUpperCase();
-  }
-
-  switch (color.selectedColor) {
-    case "palette-primary":
-      return "var(--colors-palette-primary)";
-    case "palette-secondary":
-      return "var(--colors-palette-secondary)";
-    case "palette-tertiary":
-      return "var(--colors-palette-tertiary)";
-    case "palette-quaternary":
-      return "var(--colors-palette-quaternary)";
-    case "palette-primary-light":
-      return "hsl(from var(--colors-palette-primary) h s 98)";
-    case "palette-secondary-light":
-      return "hsl(from var(--colors-palette-secondary) h s 98)";
-    case "palette-tertiary-light":
-      return "hsl(from var(--colors-palette-tertiary) h s 98)";
-    case "palette-quaternary-light":
-      return "hsl(from var(--colors-palette-quaternary) h s 98)";
-    case "palette-primary-dark":
-      return "hsl(from var(--colors-palette-primary) h s 20)";
-    case "palette-secondary-dark":
-      return "hsl(from var(--colors-palette-secondary) h s 20)";
-    case "white":
-      return "#FFFFFF";
-    default:
-      return color.selectedColor;
-  }
-};
-
 const resolveBorderRadius = (value?: string): string | undefined => {
   if (!value || value === "default") {
     return undefined;
@@ -226,7 +177,7 @@ const getTextStyles = ({
   >;
 }): React.CSSProperties => {
   return {
-    color: resolveThemeColorCssValue(color),
+    color: getThemeColorCssValue(color),
     fontFamily: styles.fontFamily === "default" ? undefined : styles.fontFamily,
     fontSize: styles.fontSize === "default" ? undefined : styles.fontSize,
     fontWeight: styles.fontWeight === "default" ? undefined : styles.fontWeight,
@@ -460,7 +411,7 @@ const BarSocialDiningHeaderSectionFields: YextFields<BarSocialDiningHeaderSectio
                 aspectRatio: {
                   label: "Aspect Ratio",
                   type: "basicSelector",
-                  options: "ASPECT_RATIO",
+                  options: aspectRatioOptions,
                 },
                 imageConstrain: {
                   label: "Image Constrain",
@@ -610,7 +561,7 @@ const BarSocialDiningHeaderSectionFields: YextFields<BarSocialDiningHeaderSectio
         aspectRatio: {
           label: "Aspect Ratio",
           type: "basicSelector",
-          options: "ASPECT_RATIO",
+          options: aspectRatioOptions,
         },
         imageConstrain: {
           label: "Image Constrain",
@@ -660,7 +611,7 @@ const BarSocialDiningHeaderSectionComponent: PuckComponent<
       ? props.navigation.fontColor
       : undefined) ??
     getReadableForegroundColor(props.section.backgroundColor, streamDocument);
-  const dividerColorValue = resolveThemeColorCssValue(
+  const dividerColorValue = getThemeColorCssValue(
     props.section.dividerColor,
   );
   const dividerStyle = dividerColorValue
@@ -812,7 +763,7 @@ const BarSocialDiningHeaderSectionComponent: PuckComponent<
               aria-label={item.label}
               className="inline-flex h-8 shrink-0 items-center justify-center rounded-full transition-opacity hover:opacity-80"
               style={{
-                color: resolveThemeColorCssValue(navigationColor),
+                color: getThemeColorCssValue(navigationColor),
               }}
             >
               <EntityField
@@ -901,7 +852,7 @@ const BarSocialDiningHeaderSectionComponent: PuckComponent<
                 props.logoImage.aspectRatio > 0
                   ? `${50 * props.logoImage.aspectRatio}px`
                   : "50px",
-              color: resolveThemeColorCssValue(navigationColor),
+              color: getThemeColorCssValue(navigationColor),
             }}
           >
             Logo
@@ -1010,13 +961,16 @@ const BarSocialDiningHeaderSectionComponent: PuckComponent<
       liveVisibility={props.section.visibleOnLivePage}
       isEditing={props.puck.isEditing}
     >
-      <header
+      <Background
+        as="header"
+        background={props.section.backgroundColor}
         className="relative"
         style={{
-          backgroundColor: resolveThemeColorCssValue(
+          ...getSurfaceColorStyle(
             props.section.backgroundColor,
+            streamDocument,
           ),
-          color: resolveThemeColorCssValue(navigationColor),
+          color: getThemeColorCssValue(navigationColor),
         }}
       >
         <div className="hidden lg:block">{desktopVariantContent}</div>
@@ -1055,7 +1009,7 @@ const BarSocialDiningHeaderSectionComponent: PuckComponent<
             }
             className="inline-flex h-10 w-10 items-center justify-center rounded-full"
             style={{
-              color: resolveThemeColorCssValue(navigationColor),
+              color: getThemeColorCssValue(navigationColor),
             }}
           >
             <svg
@@ -1082,8 +1036,9 @@ const BarSocialDiningHeaderSectionComponent: PuckComponent<
           <div
             className="absolute inset-x-0 top-full z-20 max-h-[calc(100vh-82px)] overflow-y-auto px-6 py-6 md:px-8 lg:hidden"
             style={{
-              backgroundColor: resolveThemeColorCssValue(
+              ...getSurfaceColorStyle(
                 props.section.backgroundColor,
+                streamDocument,
               ),
             }}
           >
@@ -1164,7 +1119,7 @@ const BarSocialDiningHeaderSectionComponent: PuckComponent<
                           aria-label={item.label}
                           className="inline-flex h-8 shrink-0 items-center justify-center rounded-full transition-opacity hover:opacity-80"
                           style={{
-                            color: resolveThemeColorCssValue(navigationColor),
+                            color: getThemeColorCssValue(navigationColor),
                           }}
                         >
                           <EntityField
@@ -1189,7 +1144,7 @@ const BarSocialDiningHeaderSectionComponent: PuckComponent<
             </div>
           </div>
         ) : null}
-      </header>
+      </Background>
     </VisibilityWrapper>
   );
 };

@@ -3,9 +3,10 @@ import type { SectionConfig } from "@yext/visual-editor";
 import type { PuckComponent } from "@puckeditor/core";
 import { AnalyticsScopeProvider, Link } from "@yext/pages-components";
 import {
+  Background,
   EntityField,
   getAnalyticsScopeHash,
-  isDarkColor,
+  getSurfaceColorStyle,
   resolveBreadcrumbs,
   resolveComponentData,
   toPuckFields,
@@ -20,6 +21,7 @@ import {
   type YextFields,
   VisibilityWrapper,
 } from "@yext/visual-editor";
+import { getTextStyle } from "../shared/sectionStyles";
 
 type StyledTextProps = {
   text: YextEntityField<TranslatableString>;
@@ -54,68 +56,6 @@ type BarSocialDiningBreadcrumbsSectionProps = {
 
 const breadcrumbsScopeClass = "bar-social-dining-breadcrumbs";
 
-const themeColorToCss = (selectedColor?: string): string | undefined => {
-  if (!selectedColor) {
-    return undefined;
-  }
-
-  if (selectedColor.startsWith("[") && selectedColor.endsWith("]")) {
-    return selectedColor.slice(1, -1);
-  }
-
-  const paletteMap: Record<string, string> = {
-    white: "#ffffff",
-    "palette-primary": "var(--colors-palette-primary)",
-    "palette-secondary": "var(--colors-palette-secondary)",
-    "palette-tertiary": "var(--colors-palette-tertiary)",
-    "palette-quaternary": "var(--colors-palette-quaternary)",
-    "palette-primary-contrast": "var(--colors-palette-primary-contrast)",
-    "palette-secondary-contrast": "var(--colors-palette-secondary-contrast)",
-    "palette-tertiary-contrast": "var(--colors-palette-tertiary-contrast)",
-    "palette-quaternary-contrast": "var(--colors-palette-quaternary-contrast)",
-    "palette-primary-light": "hsl(from var(--colors-palette-primary) h s 98)",
-    "palette-secondary-light":
-      "hsl(from var(--colors-palette-secondary) h s 98)",
-    "palette-tertiary-light": "hsl(from var(--colors-palette-tertiary) h s 98)",
-    "palette-quaternary-light":
-      "hsl(from var(--colors-palette-quaternary) h s 98)",
-    "palette-primary-dark": "hsl(from var(--colors-palette-primary) h s 20)",
-    "palette-secondary-dark":
-      "hsl(from var(--colors-palette-secondary) h s 20)",
-  };
-
-  return paletteMap[selectedColor] ?? selectedColor;
-};
-
-const hasExplicitThemeColor = (color?: ThemeColor): color is ThemeColor => {
-  return Boolean(color?.selectedColor && color.selectedColor !== "default");
-};
-
-const getReadableForegroundColor = (
-  surfaceColor: ThemeColor,
-  streamDocument: BreadcrumbStreamDocument,
-): ThemeColor => {
-  return {
-    selectedColor: isDarkColor(surfaceColor, streamDocument)
-      ? "white"
-      : "black",
-    contrastingColor: surfaceColor.selectedColor,
-  };
-};
-
-const resolveTextColor = (
-  fontColor: ThemeColor | undefined,
-  surfaceColor: ThemeColor,
-  streamDocument: BreadcrumbStreamDocument,
-): string | undefined => {
-  return themeColorToCss(
-    (hasExplicitThemeColor(fontColor)
-      ? fontColor
-      : getReadableForegroundColor(surfaceColor, streamDocument)
-    ).selectedColor,
-  );
-};
-
 const textStyle = ({
   styles,
   fontColor,
@@ -127,13 +67,7 @@ const textStyle = ({
   surfaceColor: ThemeColor;
   streamDocument: BreadcrumbStreamDocument;
 }): React.CSSProperties => ({
-  color: resolveTextColor(fontColor, surfaceColor, streamDocument),
-  fontFamily: styles.fontFamily === "default" ? undefined : styles.fontFamily,
-  fontSize: styles.fontSize === "default" ? undefined : styles.fontSize,
-  fontStyle: styles.fontStyle === "default" ? undefined : styles.fontStyle,
-  fontWeight: styles.fontWeight === "default" ? undefined : styles.fontWeight,
-  textTransform:
-    styles.textTransform === "default" ? undefined : styles.textTransform,
+  ...getTextStyle(styles, fontColor, surfaceColor, streamDocument),
   letterSpacing: "0.08em",
   lineHeight: 1.4,
   textDecoration: "none",
@@ -242,9 +176,6 @@ const BarSocialDiningBreadcrumbsSectionComponent: PuckComponent<
 
     return props.includeCurrentLocation || !entry.isCurrentPage;
   });
-  const sectionBackgroundColor = themeColorToCss(
-    props.section.backgroundColor.selectedColor,
-  );
   const resolvedTextStyle = textStyle({
     styles: props.rootLabel.styles,
     fontColor: props.rootLabel.fontColor,
@@ -277,10 +208,15 @@ const BarSocialDiningBreadcrumbsSectionComponent: PuckComponent<
         name={`BarSocialDiningBreadcrumbsSection${getAnalyticsScopeHash(id)}`}
       >
         <style>{breadcrumbsScopedCss}</style>
-        <section
+      <Background
+        as="section"
+        background={props.section.backgroundColor}
           className={breadcrumbsScopeClass}
           style={{
-            backgroundColor: sectionBackgroundColor,
+            ...getSurfaceColorStyle(
+              props.section.backgroundColor,
+              streamDocument,
+            ),
             padding: "18px 24px",
           }}
         >
@@ -420,7 +356,7 @@ const BarSocialDiningBreadcrumbsSectionComponent: PuckComponent<
               </ol>
             </nav>
           </div>
-        </section>
+      </Background>
       </AnalyticsScopeProvider>
     </VisibilityWrapper>
   );
@@ -429,7 +365,9 @@ const BarSocialDiningBreadcrumbsSectionComponent: PuckComponent<
 export const BarSocialDiningBreadcrumbsSection: YextComponentConfig<BarSocialDiningBreadcrumbsSectionProps> =
   {
     label: "Breadcrumbs Section",
-    fields: toPuckFields(BarSocialDiningBreadcrumbsSectionFields),
+    fields: toPuckFields<BarSocialDiningBreadcrumbsSectionProps>(
+      BarSocialDiningBreadcrumbsSectionFields,
+    ),
     defaultProps: {
       section: {
         backgroundColor: {

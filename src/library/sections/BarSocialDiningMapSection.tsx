@@ -2,7 +2,9 @@ import type { SectionConfig } from "@yext/visual-editor";
 
 import type { PuckComponent } from "@puckeditor/core";
 import {
+  Background,
   EntityField,
+  getSurfaceColorStyle,
   MapboxStaticMapComponent,
   mapboxStaticMapStyleOptions,
   type ThemeColor,
@@ -75,52 +77,15 @@ const BarSocialDiningMapSectionFields: YextFields<BarSocialDiningMapSectionProps
 const BarSocialDiningMapSectionComponent: PuckComponent<
   BarSocialDiningMapSectionProps
 > = (props) => {
-  const sectionBackgroundColorToken =
-    props.section.backgroundColor.selectedColor;
-  const sectionBackgroundColor = !sectionBackgroundColorToken
-    ? undefined
-    : sectionBackgroundColorToken.startsWith("[") &&
-        sectionBackgroundColorToken.endsWith("]")
-      ? sectionBackgroundColorToken.slice(1, -1)
-      : ((
-          {
-            white: "#ffffff",
-            "palette-primary": "var(--colors-palette-primary)",
-            "palette-secondary": "var(--colors-palette-secondary)",
-            "palette-tertiary": "var(--colors-palette-tertiary)",
-            "palette-quaternary": "var(--colors-palette-quaternary)",
-            "palette-primary-contrast":
-              "var(--colors-palette-primary-contrast)",
-            "palette-secondary-contrast":
-              "var(--colors-palette-secondary-contrast)",
-            "palette-tertiary-contrast":
-              "var(--colors-palette-tertiary-contrast)",
-            "palette-quaternary-contrast":
-              "var(--colors-palette-quaternary-contrast)",
-            "palette-primary-light":
-              "hsl(from var(--colors-palette-primary) h s 98)",
-            "palette-secondary-light":
-              "hsl(from var(--colors-palette-secondary) h s 98)",
-            "palette-tertiary-light":
-              "hsl(from var(--colors-palette-tertiary) h s 98)",
-            "palette-quaternary-light":
-              "hsl(from var(--colors-palette-quaternary) h s 98)",
-            "palette-primary-dark":
-              "hsl(from var(--colors-palette-primary) h s 20)",
-            "palette-secondary-dark":
-              "hsl(from var(--colors-palette-secondary) h s 20)",
-          } as Record<string, string>
-        )[sectionBackgroundColorToken] ?? sectionBackgroundColorToken);
-
   return (
     <VisibilityWrapper
       liveVisibility={props.section.visibleOnLivePage}
       isEditing={props.puck.isEditing}
     >
-      <section
-        style={{
-          backgroundColor: sectionBackgroundColor,
-        }}
+      <Background
+        as="section"
+        background={props.section.backgroundColor}
+        style={getSurfaceColorStyle(props.section.backgroundColor)}
       >
         <style>{`
           .bar-social-dining-map-frame {
@@ -164,7 +129,7 @@ const BarSocialDiningMapSectionComponent: PuckComponent<
             />
           </div>
         </EntityField>
-      </section>
+      </Background>
     </VisibilityWrapper>
   );
 };
@@ -172,7 +137,9 @@ const BarSocialDiningMapSectionComponent: PuckComponent<
 export const BarSocialDiningMapSection: YextComponentConfig<BarSocialDiningMapSectionProps> =
   {
     label: "Map Section",
-    fields: toPuckFields(BarSocialDiningMapSectionFields),
+    fields: toPuckFields<BarSocialDiningMapSectionProps>(
+      BarSocialDiningMapSectionFields,
+    ),
     defaultProps: {
       section: {
         backgroundColor: {

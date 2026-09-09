@@ -1,21 +1,19 @@
 import type { SectionConfig } from "@yext/visual-editor";
 
-import { parsePhoneNumber } from "awesome-phonenumber";
 import * as React from "react";
-import { type ReactNode } from "react";
 import type { PuckComponent } from "@puckeditor/core";
 import { AnalyticsScopeProvider } from "@yext/pages-components";
 import {
+  Background,
   ComprehensiveCTA,
   EntityField,
   Image,
-  MaybeRTF,
   getAnalyticsScopeHash,
   getDefaultRTF,
+  getSurfaceColorStyle,
   resolveComponentData,
   useDocument,
   type ComprehensiveCTAValue,
-  type RichText,
   type StyledImageValue,
   type StyledTextValue,
   type ThemeColor,
@@ -28,8 +26,16 @@ import {
   VisibilityWrapper,
   toPuckFields,
 } from "@yext/visual-editor";
+import { formatPhoneNumber } from "@yext/visual-editor/section-library-support";
 import { FaFacebookF, FaInstagram, FaPhone, FaYelp } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
+import { createCta } from "../shared/createCta";
+import { aspectRatioOptions } from "../shared/fieldOptions";
+import {
+  getScopedTypographyCss,
+  getTextStyle as textStyle,
+  renderRichText,
+} from "../shared/sectionStyles";
 
 type StyledTextProps = {
   text: YextEntityField<TranslatableString>;
@@ -86,137 +92,6 @@ type BarSocialDiningFooterSectionProps = {
   copyrightText: StyledRtfProps;
 };
 
-const themeColorToCss = (selectedColor?: string): string | undefined => {
-  if (!selectedColor) {
-    return undefined;
-  }
-
-  if (selectedColor.startsWith("[") && selectedColor.endsWith("]")) {
-    return selectedColor.slice(1, -1);
-  }
-
-  const paletteMap: Record<string, string> = {
-    white: "#ffffff",
-    "palette-primary": "var(--colors-palette-primary)",
-    "palette-secondary": "var(--colors-palette-secondary)",
-    "palette-tertiary": "var(--colors-palette-tertiary)",
-    "palette-quaternary": "var(--colors-palette-quaternary)",
-    "palette-primary-contrast": "var(--colors-palette-primary-contrast)",
-    "palette-secondary-contrast": "var(--colors-palette-secondary-contrast)",
-    "palette-tertiary-contrast": "var(--colors-palette-tertiary-contrast)",
-    "palette-quaternary-contrast": "var(--colors-palette-quaternary-contrast)",
-    "palette-primary-light": "hsl(from var(--colors-palette-primary) h s 98)",
-    "palette-secondary-light":
-      "hsl(from var(--colors-palette-secondary) h s 98)",
-    "palette-tertiary-light": "hsl(from var(--colors-palette-tertiary) h s 98)",
-    "palette-quaternary-light":
-      "hsl(from var(--colors-palette-quaternary) h s 98)",
-    "palette-primary-dark": "hsl(from var(--colors-palette-primary) h s 20)",
-    "palette-secondary-dark":
-      "hsl(from var(--colors-palette-secondary) h s 20)",
-  };
-
-  return paletteMap[selectedColor] ?? selectedColor;
-};
-
-const hasExplicitThemeColor = (color?: ThemeColor): color is ThemeColor => {
-  return Boolean(color?.selectedColor && color.selectedColor !== "default");
-};
-
-const getReadableForegroundColor = (surfaceColor: ThemeColor): ThemeColor => {
-  switch (surfaceColor.selectedColor) {
-    case "white":
-    case "palette-primary-light":
-    case "palette-secondary-light":
-    case "palette-tertiary-light":
-    case "palette-quaternary-light":
-      return {
-        selectedColor: "black",
-        contrastingColor: surfaceColor.selectedColor,
-      };
-    case "black":
-    case "palette-primary-dark":
-    case "palette-secondary-dark":
-      return {
-        selectedColor: "white",
-        contrastingColor: surfaceColor.selectedColor,
-      };
-    case "palette-primary":
-      return {
-        selectedColor: "palette-primary-contrast",
-        contrastingColor: surfaceColor.selectedColor,
-      };
-    case "palette-secondary":
-      return {
-        selectedColor: "palette-secondary-contrast",
-        contrastingColor: surfaceColor.selectedColor,
-      };
-    case "palette-tertiary":
-      return {
-        selectedColor: "palette-tertiary-contrast",
-        contrastingColor: surfaceColor.selectedColor,
-      };
-    case "palette-quaternary":
-      return {
-        selectedColor: "palette-quaternary-contrast",
-        contrastingColor: surfaceColor.selectedColor,
-      };
-    default:
-      return {
-        selectedColor: surfaceColor.contrastingColor || "black",
-        contrastingColor: surfaceColor.selectedColor,
-      };
-  }
-};
-
-const resolveTextColor = (
-  fontColor: ThemeColor | undefined,
-  surfaceColor: ThemeColor,
-): string | undefined => {
-  return themeColorToCss(
-    (hasExplicitThemeColor(fontColor)
-      ? fontColor
-      : getReadableForegroundColor(surfaceColor)
-    ).selectedColor,
-  );
-};
-
-const resolveRichTextValue = (
-  value: unknown,
-): RichText | string | undefined => {
-  if (typeof value === "string") {
-    return value;
-  }
-
-  if (typeof value === "object" && value !== null && "html" in value) {
-    return value as RichText;
-  }
-
-  return undefined;
-};
-
-const renderRichText = (value: unknown): ReactNode => {
-  if (React.isValidElement(value)) {
-    return value;
-  }
-
-  return <MaybeRTF data={resolveRichTextValue(value)} />;
-};
-
-const textStyle = (
-  styles: StyledTextValue,
-  fontColor: ThemeColor | undefined,
-  surfaceColor: ThemeColor,
-): React.CSSProperties => ({
-  color: resolveTextColor(fontColor, surfaceColor),
-  fontFamily: styles.fontFamily === "default" ? undefined : styles.fontFamily,
-  fontSize: styles.fontSize === "default" ? undefined : styles.fontSize,
-  fontStyle: styles.fontStyle === "default" ? undefined : styles.fontStyle,
-  fontWeight: styles.fontWeight === "default" ? undefined : styles.fontWeight,
-  textTransform:
-    styles.textTransform === "default" ? undefined : styles.textTransform,
-});
-
 const getCtaLabel = (value: unknown): string => {
   const ctaValue = value as Partial<ComprehensiveCTAValue>;
 
@@ -247,7 +122,7 @@ const getCtaLabel = (value: unknown): string => {
   return "Link";
 };
 
-const renderSocialIcon = (index: number): ReactNode => {
+const renderSocialIcon = (index: number): React.ReactNode => {
   if (index === 0) {
     return <FaFacebookF />;
   }
@@ -260,167 +135,13 @@ const renderSocialIcon = (index: number): ReactNode => {
 };
 
 const footerScopeClass = "bar-social-dining-footer";
-const footerScopedTypographyCss = `
-  .${footerScopeClass} p {
-    font-family: var(--fontFamily-body-fontFamily);
-    font-size: var(--fontSize-body-fontSize);
-    line-height: 1.5;
-    font-weight: var(--fontWeight-body-fontWeight);
-    font-style: var(--fontStyle-body-fontStyle);
-    text-transform: var(--textTransform-body-textTransform);
-  }
-
-  .${footerScopeClass} li {
-    font-family: var(--fontFamily-body-fontFamily);
-    font-size: var(--fontSize-body-fontSize);
-    line-height: 1.5;
-    font-weight: var(--fontWeight-body-fontWeight);
-    font-style: var(--fontStyle-body-fontStyle);
-    text-transform: var(--textTransform-body-textTransform);
-  }
-
-  .${footerScopeClass} h1 {
-    font-family: var(--fontFamily-h1-fontFamily);
-    font-size: var(--fontSize-h1-fontSize);
-    line-height: 1.2;
-    font-weight: var(--fontWeight-h1-fontWeight);
-    font-style: var(--fontStyle-h1-fontStyle);
-    text-transform: var(--textTransform-h1-textTransform);
-  }
-
-  .${footerScopeClass} h2 {
-    font-family: var(--fontFamily-h2-fontFamily);
-    font-size: var(--fontSize-h2-fontSize);
-    line-height: 1.2;
-    font-weight: var(--fontWeight-h2-fontWeight);
-    font-style: var(--fontStyle-h2-fontStyle);
-    text-transform: var(--textTransform-h2-textTransform);
-  }
-
-  .${footerScopeClass} h3 {
-    font-family: var(--fontFamily-h3-fontFamily);
-    font-size: var(--fontSize-h3-fontSize);
-    line-height: 1.2;
-    font-weight: var(--fontWeight-h3-fontWeight);
-    font-style: var(--fontStyle-h3-fontStyle);
-    text-transform: var(--textTransform-h3-textTransform);
-  }
-
-  .${footerScopeClass} h4 {
-    font-family: var(--fontFamily-h4-fontFamily);
-    font-size: var(--fontSize-h4-fontSize);
-    line-height: 1.2;
-    font-weight: var(--fontWeight-h4-fontWeight);
-    font-style: var(--fontStyle-h4-fontStyle);
-    text-transform: var(--textTransform-h4-textTransform);
-  }
-
-  .${footerScopeClass} h5 {
-    font-family: var(--fontFamily-h5-fontFamily);
-    font-size: var(--fontSize-h5-fontSize);
-    line-height: 1.2;
-    font-weight: var(--fontWeight-h5-fontWeight);
-    font-style: var(--fontStyle-h5-fontStyle);
-    text-transform: var(--textTransform-h5-textTransform);
-  }
-
-  .${footerScopeClass} h6 {
-    font-family: var(--fontFamily-h6-fontFamily);
-    font-size: var(--fontSize-h6-fontSize);
-    line-height: 1.2;
-    font-weight: var(--fontWeight-h6-fontWeight);
-    font-style: var(--fontStyle-h6-fontStyle);
-    text-transform: var(--textTransform-h6-textTransform);
-  }
-
-  .${footerScopeClass} .bar-social-dining-link-typography a {
-    font-family: var(--fontFamily-link-fontFamily);
-    font-size: var(--fontSize-link-fontSize);
-    font-weight: var(--fontWeight-link-fontWeight);
-    font-style: var(--fontStyle-link-fontStyle);
-    line-height: 1.5;
-    text-decoration: underline;
-    text-transform: var(--textTransform-link-textTransform);
-    letter-spacing: var(--letterSpacing-link-letterSpacing);
-  }
-`;
-
-const formatPhoneNumber = (
-  phoneNumberString: string,
-  format: "international" | "domestic",
-): string => {
-  const parsedPhoneNumber = parsePhoneNumber(
-    phoneNumberString.replace(/[^\d+]/g, ""),
-  );
-  if (!parsedPhoneNumber.valid || !parsedPhoneNumber.number) {
-    return phoneNumberString;
-  }
-
-  return format === "international"
-    ? parsedPhoneNumber.number.international
-    : parsedPhoneNumber.number.national;
-};
+const footerScopedTypographyCss = getScopedTypographyCss(footerScopeClass);
 
 const createTextLinkCta = (
   label: string,
   link: string,
   color: ThemeColor,
-): ComprehensiveCTAValue => ({
-  data: {
-    actionType: "link",
-    cta: {
-      field: "",
-      constantValue: {
-        ctaType: "textAndLink",
-        label: {
-          defaultValue: label,
-          hasLocalizedValue: "true",
-        },
-        link: {
-          defaultValue: link,
-          hasLocalizedValue: "true",
-        },
-        linkType: "URL",
-      },
-      constantValueEnabled: true,
-      selectedType: "textAndLink",
-    },
-    openInNewTab: false,
-    buttonText: {
-      defaultValue: label,
-      hasLocalizedValue: "true",
-    },
-    customId: "",
-    customClass: "",
-    dataAttributes: [],
-    ariaLabel: {
-      defaultValue: label,
-      hasLocalizedValue: "true",
-    },
-  },
-  styles: {
-    variant: "link",
-    color,
-    button: {
-      fontFamily: "default",
-      fontSize: "default",
-      fontWeight: "default",
-      fontStyle: "default",
-      textTransform: "default",
-      letterSpacing: "default",
-      borderRadius: "default",
-    },
-    link: {
-      fontFamily: "default",
-      fontSize: "default",
-      fontWeight: "default",
-      fontStyle: "default",
-      textTransform: "default",
-      letterSpacing: "default",
-      includeCaret: "default",
-    },
-  },
-});
+): ComprehensiveCTAValue => createCta({ label, link, color, variant: "link" });
 
 const footerLinkColor: ThemeColor = {
   selectedColor: "[#FFFFFF]",
@@ -462,7 +183,7 @@ const BarSocialDiningFooterSectionFields: YextFields<BarSocialDiningFooterSectio
         aspectRatio: {
           label: "Aspect Ratio",
           type: "basicSelector",
-          options: "ASPECT_RATIO",
+          options: aspectRatioOptions,
         },
         imageConstrain: {
           label: "Image Constrain",
@@ -687,10 +408,6 @@ const BarSocialDiningFooterSectionComponent: PuckComponent<
 > = ({ id, ...props }) => {
   const streamDocument = useDocument<{ locale?: string }>();
   const locale = streamDocument.locale ?? "en";
-  const sectionForeground = resolveTextColor(
-    undefined,
-    props.section.backgroundColor,
-  );
   const resolvedLogoImage = resolveComponentData(
     props.logoImage.image,
     locale,
@@ -802,13 +519,15 @@ const BarSocialDiningFooterSectionComponent: PuckComponent<
             }
           }
         `}</style>
-        <footer
+      <Background
+        as="footer"
+        background={props.section.backgroundColor}
           className={footerScopeClass}
           style={{
-            backgroundColor: themeColorToCss(
-              props.section.backgroundColor.selectedColor,
+            ...getSurfaceColorStyle(
+              props.section.backgroundColor,
+              streamDocument,
             ),
-            color: sectionForeground,
             padding: "40px 28px",
           }}
         >
@@ -1101,7 +820,7 @@ const BarSocialDiningFooterSectionComponent: PuckComponent<
               </div>
             </EntityField>
           </div>
-        </footer>
+      </Background>
       </AnalyticsScopeProvider>
     </VisibilityWrapper>
   );
@@ -1110,7 +829,9 @@ const BarSocialDiningFooterSectionComponent: PuckComponent<
 export const BarSocialDiningFooterSection: YextComponentConfig<BarSocialDiningFooterSectionProps> =
   {
     label: "Footer Section",
-    fields: toPuckFields(BarSocialDiningFooterSectionFields),
+    fields: toPuckFields<BarSocialDiningFooterSectionProps>(
+      BarSocialDiningFooterSectionFields,
+    ),
     defaultProps: {
       section: {
         backgroundColor: {

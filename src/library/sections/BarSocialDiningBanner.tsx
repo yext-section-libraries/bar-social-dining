@@ -18,6 +18,7 @@ import {
   type YextFields,
   backgroundColors,
   getDefaultRTF,
+  getSurfaceColorStyle,
   resolveComponentData,
   resolveYextEntityField,
   toPuckFields,
@@ -140,6 +141,7 @@ const BarSocialDiningBannerComponent: PuckComponent<BarSocialDiningBannerProps> 
       <PageSection
         background={section.backgroundColor}
         className="flex items-center justify-center"
+        style={getSurfaceColorStyle(section.backgroundColor, streamDocument)}
         verticalPadding="sm"
       >
         <div className="relative flex h-20 w-full flex-row items-center justify-center gap-3 rounded-lg border border-gray-200 bg-gray-100 px-4">
@@ -165,7 +167,6 @@ const BarSocialDiningBannerComponent: PuckComponent<BarSocialDiningBannerProps> 
     data.text,
     i18n.language,
     streamDocument,
-    { richTextStyleOverrides },
   );
 
   if (!resolvedText) {
@@ -182,6 +183,7 @@ const BarSocialDiningBannerComponent: PuckComponent<BarSocialDiningBannerProps> 
           right: "justify-end text-right",
         }[styles.textAlignment]
       }`}
+      style={getSurfaceColorStyle(section.backgroundColor, streamDocument)}
       verticalPadding="sm"
     >
       <EntityField
@@ -207,7 +209,7 @@ const BarSocialDiningBannerComponent: PuckComponent<BarSocialDiningBannerProps> 
  */
 export const BarSocialDiningBanner: YextComponentConfig<BarSocialDiningBannerProps> = {
   label: "Banner",
-  fields: toPuckFields(BarSocialDiningBannerFields),
+  fields: toPuckFields<BarSocialDiningBannerProps>(BarSocialDiningBannerFields),
   defaultProps: {
     data: {
       text: {

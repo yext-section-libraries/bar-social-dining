@@ -1,6 +1,5 @@
 import type { SectionConfig } from "@yext/visual-editor";
 
-import { parsePhoneNumber } from "awesome-phonenumber";
 import type { PuckComponent } from "@puckeditor/core";
 import {
   AnalyticsScopeProvider,
@@ -8,8 +7,10 @@ import {
   getDirections,
 } from "@yext/pages-components";
 import {
+  Background,
   EntityField,
   getAnalyticsScopeHash,
+  getSurfaceColorStyle,
   mergeMeta,
   resolveComponentData,
   resolveUrlTemplate,
@@ -27,11 +28,16 @@ import {
   VisibilityWrapper,
   toPuckFields,
 } from "@yext/visual-editor";
+import { formatPhoneNumber } from "@yext/visual-editor/section-library-support";
 import type {
   AddressType,
   Coordinate,
   ListingType,
 } from "@yext/pages-components";
+import {
+  getScopedTypographyCss,
+  resolveTextColor,
+} from "../shared/sectionStyles";
 
 type NearbyLocationShape = NearbyLocationDoc & {
   address?: AddressType;
@@ -56,199 +62,8 @@ type BarSocialDiningNearbyLocationsSectionProps = {
   cardBackgroundColor: ThemeColor;
 };
 
-const themeColorToCss = (selectedColor?: string): string | undefined => {
-  if (!selectedColor) {
-    return undefined;
-  }
-
-  if (selectedColor.startsWith("[") && selectedColor.endsWith("]")) {
-    return selectedColor.slice(1, -1);
-  }
-
-  const paletteMap: Record<string, string> = {
-    white: "#ffffff",
-    "palette-primary": "var(--colors-palette-primary)",
-    "palette-secondary": "var(--colors-palette-secondary)",
-    "palette-tertiary": "var(--colors-palette-tertiary)",
-    "palette-quaternary": "var(--colors-palette-quaternary)",
-    "palette-primary-contrast": "var(--colors-palette-primary-contrast)",
-    "palette-secondary-contrast": "var(--colors-palette-secondary-contrast)",
-    "palette-tertiary-contrast": "var(--colors-palette-tertiary-contrast)",
-    "palette-quaternary-contrast": "var(--colors-palette-quaternary-contrast)",
-    "palette-primary-light": "hsl(from var(--colors-palette-primary) h s 98)",
-    "palette-secondary-light":
-      "hsl(from var(--colors-palette-secondary) h s 98)",
-    "palette-tertiary-light": "hsl(from var(--colors-palette-tertiary) h s 98)",
-    "palette-quaternary-light":
-      "hsl(from var(--colors-palette-quaternary) h s 98)",
-    "palette-primary-dark": "hsl(from var(--colors-palette-primary) h s 20)",
-    "palette-secondary-dark":
-      "hsl(from var(--colors-palette-secondary) h s 20)",
-  };
-
-  return paletteMap[selectedColor] ?? selectedColor;
-};
-
-const hasExplicitThemeColor = (color?: ThemeColor): color is ThemeColor => {
-  return Boolean(color?.selectedColor && color.selectedColor !== "default");
-};
-
-const getReadableForegroundColor = (surfaceColor: ThemeColor): ThemeColor => {
-  switch (surfaceColor.selectedColor) {
-    case "white":
-    case "palette-primary-light":
-    case "palette-secondary-light":
-    case "palette-tertiary-light":
-    case "palette-quaternary-light":
-      return {
-        selectedColor: "black",
-        contrastingColor: surfaceColor.selectedColor,
-      };
-    case "black":
-    case "palette-primary-dark":
-    case "palette-secondary-dark":
-      return {
-        selectedColor: "white",
-        contrastingColor: surfaceColor.selectedColor,
-      };
-    case "palette-primary":
-      return {
-        selectedColor: "palette-primary-contrast",
-        contrastingColor: surfaceColor.selectedColor,
-      };
-    case "palette-secondary":
-      return {
-        selectedColor: "palette-secondary-contrast",
-        contrastingColor: surfaceColor.selectedColor,
-      };
-    case "palette-tertiary":
-      return {
-        selectedColor: "palette-tertiary-contrast",
-        contrastingColor: surfaceColor.selectedColor,
-      };
-    case "palette-quaternary":
-      return {
-        selectedColor: "palette-quaternary-contrast",
-        contrastingColor: surfaceColor.selectedColor,
-      };
-    default:
-      return {
-        selectedColor: surfaceColor.contrastingColor || "black",
-        contrastingColor: surfaceColor.selectedColor,
-      };
-  }
-};
-
-const resolveTextColor = (
-  fontColor: ThemeColor | undefined,
-  surfaceColor: ThemeColor,
-): string | undefined => {
-  return themeColorToCss(
-    (hasExplicitThemeColor(fontColor)
-      ? fontColor
-      : getReadableForegroundColor(surfaceColor)
-    ).selectedColor,
-  );
-};
-
-const formatPhoneNumber = (value?: string): string => {
-  if (!value) {
-    return "";
-  }
-
-  const parsedPhoneNumber = parsePhoneNumber(value.replace(/[^\d+]/g, ""));
-  if (!parsedPhoneNumber.valid || !parsedPhoneNumber.number) {
-    return value;
-  }
-
-  return parsedPhoneNumber.number.national;
-};
-
 const nearbyLocationsScopeClass = "bar-social-dining-nearby-locations";
-const nearbyLocationsScopedTypographyCss = `
-  .${nearbyLocationsScopeClass} p {
-    font-family: var(--fontFamily-body-fontFamily);
-    font-size: var(--fontSize-body-fontSize);
-    line-height: 1.5;
-    font-weight: var(--fontWeight-body-fontWeight);
-    font-style: var(--fontStyle-body-fontStyle);
-    text-transform: var(--textTransform-body-textTransform);
-  }
-
-  .${nearbyLocationsScopeClass} li {
-    font-family: var(--fontFamily-body-fontFamily);
-    font-size: var(--fontSize-body-fontSize);
-    line-height: 1.5;
-    font-weight: var(--fontWeight-body-fontWeight);
-    font-style: var(--fontStyle-body-fontStyle);
-    text-transform: var(--textTransform-body-textTransform);
-  }
-
-  .${nearbyLocationsScopeClass} h1 {
-    font-family: var(--fontFamily-h1-fontFamily);
-    font-size: var(--fontSize-h1-fontSize);
-    line-height: 1.2;
-    font-weight: var(--fontWeight-h1-fontWeight);
-    font-style: var(--fontStyle-h1-fontStyle);
-    text-transform: var(--textTransform-h1-textTransform);
-  }
-
-  .${nearbyLocationsScopeClass} h2 {
-    font-family: var(--fontFamily-h2-fontFamily);
-    font-size: var(--fontSize-h2-fontSize);
-    line-height: 1.2;
-    font-weight: var(--fontWeight-h2-fontWeight);
-    font-style: var(--fontStyle-h2-fontStyle);
-    text-transform: var(--textTransform-h2-textTransform);
-  }
-
-  .${nearbyLocationsScopeClass} h3 {
-    font-family: var(--fontFamily-h3-fontFamily);
-    font-size: var(--fontSize-h3-fontSize);
-    line-height: 1.2;
-    font-weight: var(--fontWeight-h3-fontWeight);
-    font-style: var(--fontStyle-h3-fontStyle);
-    text-transform: var(--textTransform-h3-textTransform);
-  }
-
-  .${nearbyLocationsScopeClass} h4 {
-    font-family: var(--fontFamily-h4-fontFamily);
-    font-size: var(--fontSize-h4-fontSize);
-    line-height: 1.2;
-    font-weight: var(--fontWeight-h4-fontWeight);
-    font-style: var(--fontStyle-h4-fontStyle);
-    text-transform: var(--textTransform-h4-textTransform);
-  }
-
-  .${nearbyLocationsScopeClass} h5 {
-    font-family: var(--fontFamily-h5-fontFamily);
-    font-size: var(--fontSize-h5-fontSize);
-    line-height: 1.2;
-    font-weight: var(--fontWeight-h5-fontWeight);
-    font-style: var(--fontStyle-h5-fontStyle);
-    text-transform: var(--textTransform-h5-textTransform);
-  }
-
-  .${nearbyLocationsScopeClass} h6 {
-    font-family: var(--fontFamily-h6-fontFamily);
-    font-size: var(--fontSize-h6-fontSize);
-    line-height: 1.2;
-    font-weight: var(--fontWeight-h6-fontWeight);
-    font-style: var(--fontStyle-h6-fontStyle);
-    text-transform: var(--textTransform-h6-textTransform);
-  }
-
-  .${nearbyLocationsScopeClass} .bar-social-dining-link-typography a {
-    font-family: var(--fontFamily-link-fontFamily);
-    font-size: var(--fontSize-link-fontSize);
-    font-weight: var(--fontWeight-link-fontWeight);
-    font-style: var(--fontStyle-link-fontStyle);
-    line-height: 1.5;
-    text-decoration: underline;
-    text-transform: var(--textTransform-link-textTransform);
-    letter-spacing: var(--letterSpacing-link-letterSpacing);
-  }
-`;
+const nearbyLocationsScopedTypographyCss = getScopedTypographyCss(nearbyLocationsScopeClass);
 
 const BarSocialDiningNearbyLocationsSectionFields: YextFields<BarSocialDiningNearbyLocationsSectionProps> =
   {
@@ -373,11 +188,14 @@ const BarSocialDiningNearbyLocationsSectionComponent: PuckComponent<
         name={`BarSocialDiningNearbyLocationsSection${getAnalyticsScopeHash(id)}`}
       >
         <style>{nearbyLocationsScopedTypographyCss}</style>
-        <section
+      <Background
+        as="section"
+        background={props.section.backgroundColor}
           className={nearbyLocationsScopeClass}
           style={{
-            backgroundColor: themeColorToCss(
-              props.section.backgroundColor.selectedColor,
+            ...getSurfaceColorStyle(
+              props.section.backgroundColor,
+              streamDocument,
             ),
             padding: "72px 24px 48px",
           }}
@@ -459,8 +277,9 @@ const BarSocialDiningNearbyLocationsSectionComponent: PuckComponent<
                     <article
                       key={locationData.id ?? locationData.name ?? index}
                       style={{
-                        backgroundColor: themeColorToCss(
-                          props.cardBackgroundColor.selectedColor,
+                        ...getSurfaceColorStyle(
+                          props.cardBackgroundColor,
+                          streamDocument,
                         ),
                         border: "1px solid rgba(23, 18, 25, 0.08)",
                         color: cardForeground,
@@ -482,7 +301,7 @@ const BarSocialDiningNearbyLocationsSectionComponent: PuckComponent<
                       </p>
                       {locationData.mainPhone ? (
                         <p style={{ margin: "0 0 24px" }}>
-                          {formatPhoneNumber(locationData.mainPhone)}
+                          {formatPhoneNumber(locationData.mainPhone, "domestic")}
                         </p>
                       ) : null}
                       <div className="bar-social-dining-link-typography">
@@ -502,7 +321,7 @@ const BarSocialDiningNearbyLocationsSectionComponent: PuckComponent<
               </div>
             )}
           </div>
-        </section>
+      </Background>
       </AnalyticsScopeProvider>
     </VisibilityWrapper>
   );
@@ -511,7 +330,9 @@ const BarSocialDiningNearbyLocationsSectionComponent: PuckComponent<
 export const BarSocialDiningNearbyLocationsSection: YextComponentConfig<BarSocialDiningNearbyLocationsSectionProps> =
   {
     label: "Nearby Locations Section",
-    fields: toPuckFields(BarSocialDiningNearbyLocationsSectionFields),
+    fields: toPuckFields<BarSocialDiningNearbyLocationsSectionProps>(
+      BarSocialDiningNearbyLocationsSectionFields,
+    ),
     defaultProps: {
       section: {
         backgroundColor: {

@@ -4,16 +4,16 @@ import type { PuckComponent } from "@puckeditor/core";
 import * as React from "react";
 import { AnalyticsScopeProvider } from "@yext/pages-components";
 import {
+  Background,
   ComprehensiveCTA,
   EntityField,
   Image,
-  MaybeRTF,
   getAnalyticsScopeHash,
   getDefaultRTF,
+  getSurfaceColorStyle,
   resolveComponentData,
   useDocument,
   type ComprehensiveCTAValue,
-  type RichText,
   type StyledImageValue,
   type StyledTextValue,
   type ThemeColor,
@@ -26,6 +26,13 @@ import {
   VisibilityWrapper,
   toPuckFields,
 } from "@yext/visual-editor";
+import { createCta } from "../shared/createCta";
+import { aspectRatioOptions } from "../shared/fieldOptions";
+import {
+  getScopedTypographyCss,
+  getTextStyle as textStyle,
+  renderRichText,
+} from "../shared/sectionStyles";
 
 type StyledTextProps = {
   text: YextEntityField<TranslatableString>;
@@ -60,281 +67,14 @@ type BarSocialDiningHeroSectionProps = {
   tertiaryCta: ComprehensiveCTAValue;
 };
 
-const themeColorToCss = (selectedColor?: string): string | undefined => {
-  if (!selectedColor) {
-    return undefined;
-  }
-
-  if (selectedColor.startsWith("[") && selectedColor.endsWith("]")) {
-    return selectedColor.slice(1, -1);
-  }
-
-  const paletteMap: Record<string, string> = {
-    white: "#ffffff",
-    "palette-primary": "var(--colors-palette-primary)",
-    "palette-secondary": "var(--colors-palette-secondary)",
-    "palette-tertiary": "var(--colors-palette-tertiary)",
-    "palette-quaternary": "var(--colors-palette-quaternary)",
-    "palette-primary-contrast": "var(--colors-palette-primary-contrast)",
-    "palette-secondary-contrast": "var(--colors-palette-secondary-contrast)",
-    "palette-tertiary-contrast": "var(--colors-palette-tertiary-contrast)",
-    "palette-quaternary-contrast": "var(--colors-palette-quaternary-contrast)",
-    "palette-primary-light": "hsl(from var(--colors-palette-primary) h s 98)",
-    "palette-secondary-light":
-      "hsl(from var(--colors-palette-secondary) h s 98)",
-    "palette-tertiary-light": "hsl(from var(--colors-palette-tertiary) h s 98)",
-    "palette-quaternary-light":
-      "hsl(from var(--colors-palette-quaternary) h s 98)",
-    "palette-primary-dark": "hsl(from var(--colors-palette-primary) h s 20)",
-    "palette-secondary-dark":
-      "hsl(from var(--colors-palette-secondary) h s 20)",
-  };
-
-  return paletteMap[selectedColor] ?? selectedColor;
-};
-
-const hasExplicitThemeColor = (color?: ThemeColor): color is ThemeColor => {
-  return Boolean(color?.selectedColor && color.selectedColor !== "default");
-};
-
-const getReadableForegroundColor = (surfaceColor: ThemeColor): ThemeColor => {
-  switch (surfaceColor.selectedColor) {
-    case "white":
-    case "palette-primary-light":
-    case "palette-secondary-light":
-    case "palette-tertiary-light":
-    case "palette-quaternary-light":
-      return {
-        selectedColor: "black",
-        contrastingColor: surfaceColor.selectedColor,
-      };
-    case "black":
-    case "palette-primary-dark":
-    case "palette-secondary-dark":
-      return {
-        selectedColor: "white",
-        contrastingColor: surfaceColor.selectedColor,
-      };
-    case "palette-primary":
-      return {
-        selectedColor: "palette-primary-contrast",
-        contrastingColor: surfaceColor.selectedColor,
-      };
-    case "palette-secondary":
-      return {
-        selectedColor: "palette-secondary-contrast",
-        contrastingColor: surfaceColor.selectedColor,
-      };
-    case "palette-tertiary":
-      return {
-        selectedColor: "palette-tertiary-contrast",
-        contrastingColor: surfaceColor.selectedColor,
-      };
-    case "palette-quaternary":
-      return {
-        selectedColor: "palette-quaternary-contrast",
-        contrastingColor: surfaceColor.selectedColor,
-      };
-    default:
-      return {
-        selectedColor: surfaceColor.contrastingColor || "black",
-        contrastingColor: surfaceColor.selectedColor,
-      };
-  }
-};
-
-const resolveTextColor = (
-  fontColor: ThemeColor | undefined,
-  surfaceColor: ThemeColor,
-): string | undefined => {
-  return themeColorToCss(
-    (hasExplicitThemeColor(fontColor)
-      ? fontColor
-      : getReadableForegroundColor(surfaceColor)
-    ).selectedColor,
-  );
-};
-
-const normalizeRichText = (value: unknown): RichText | string | undefined => {
-  if (typeof value === "string") {
-    return value;
-  }
-
-  if (typeof value === "object" && value !== null && "html" in value) {
-    return value as RichText;
-  }
-
-  return undefined;
-};
-
-const renderRichText = (value: unknown): React.ReactNode => {
-  if (React.isValidElement(value)) {
-    return value;
-  }
-
-  return <MaybeRTF data={normalizeRichText(value)} />;
-};
-
 const heroScopeClass = "bar-social-dining-hero";
-const heroScopedTypographyCss = `
-  .${heroScopeClass} p {
-    font-family: var(--fontFamily-body-fontFamily);
-    font-size: var(--fontSize-body-fontSize);
-    line-height: 1.5;
-    font-weight: var(--fontWeight-body-fontWeight);
-    font-style: var(--fontStyle-body-fontStyle);
-    text-transform: var(--textTransform-body-textTransform);
-  }
-
-  .${heroScopeClass} li {
-    font-family: var(--fontFamily-body-fontFamily);
-    font-size: var(--fontSize-body-fontSize);
-    line-height: 1.5;
-    font-weight: var(--fontWeight-body-fontWeight);
-    font-style: var(--fontStyle-body-fontStyle);
-    text-transform: var(--textTransform-body-textTransform);
-  }
-
-  .${heroScopeClass} h1 {
-    font-family: var(--fontFamily-h1-fontFamily);
-    font-size: var(--fontSize-h1-fontSize);
-    line-height: 1.2;
-    font-weight: var(--fontWeight-h1-fontWeight);
-    font-style: var(--fontStyle-h1-fontStyle);
-    text-transform: var(--textTransform-h1-textTransform);
-  }
-
-  .${heroScopeClass} h2 {
-    font-family: var(--fontFamily-h2-fontFamily);
-    font-size: var(--fontSize-h2-fontSize);
-    line-height: 1.2;
-    font-weight: var(--fontWeight-h2-fontWeight);
-    font-style: var(--fontStyle-h2-fontStyle);
-    text-transform: var(--textTransform-h2-textTransform);
-  }
-
-  .${heroScopeClass} h3 {
-    font-family: var(--fontFamily-h3-fontFamily);
-    font-size: var(--fontSize-h3-fontSize);
-    line-height: 1.2;
-    font-weight: var(--fontWeight-h3-fontWeight);
-    font-style: var(--fontStyle-h3-fontStyle);
-    text-transform: var(--textTransform-h3-textTransform);
-  }
-
-  .${heroScopeClass} h4 {
-    font-family: var(--fontFamily-h4-fontFamily);
-    font-size: var(--fontSize-h4-fontSize);
-    line-height: 1.2;
-    font-weight: var(--fontWeight-h4-fontWeight);
-    font-style: var(--fontStyle-h4-fontStyle);
-    text-transform: var(--textTransform-h4-textTransform);
-  }
-
-  .${heroScopeClass} h5 {
-    font-family: var(--fontFamily-h5-fontFamily);
-    font-size: var(--fontSize-h5-fontSize);
-    line-height: 1.2;
-    font-weight: var(--fontWeight-h5-fontWeight);
-    font-style: var(--fontStyle-h5-fontStyle);
-    text-transform: var(--textTransform-h5-textTransform);
-  }
-
-  .${heroScopeClass} h6 {
-    font-family: var(--fontFamily-h6-fontFamily);
-    font-size: var(--fontSize-h6-fontSize);
-    line-height: 1.2;
-    font-weight: var(--fontWeight-h6-fontWeight);
-    font-style: var(--fontStyle-h6-fontStyle);
-    text-transform: var(--textTransform-h6-textTransform);
-  }
-
-  .${heroScopeClass} .bar-social-dining-link-typography a {
-    font-family: var(--fontFamily-link-fontFamily);
-    font-size: var(--fontSize-link-fontSize);
-    font-weight: var(--fontWeight-link-fontWeight);
-    font-style: var(--fontStyle-link-fontStyle);
-    line-height: 1.5;
-    text-decoration: underline;
-    text-transform: var(--textTransform-link-textTransform);
-    letter-spacing: var(--letterSpacing-link-letterSpacing);
-  }
-`;
-
-const textStyle = (
-  styles: StyledTextValue,
-  fontColor?: ThemeColor,
-  surfaceColor?: ThemeColor,
-): React.CSSProperties => ({
-  color: surfaceColor ? resolveTextColor(fontColor, surfaceColor) : undefined,
-  fontFamily: styles.fontFamily === "default" ? undefined : styles.fontFamily,
-  fontSize: styles.fontSize === "default" ? undefined : styles.fontSize,
-  fontStyle: styles.fontStyle === "default" ? undefined : styles.fontStyle,
-  fontWeight: styles.fontWeight === "default" ? undefined : styles.fontWeight,
-  textTransform:
-    styles.textTransform === "default" ? undefined : styles.textTransform,
-});
+const heroScopedTypographyCss = getScopedTypographyCss(heroScopeClass);
 
 const createHeroCta = (
   label: string,
   color: ThemeColor,
   variant: "primary" | "secondary",
-): ComprehensiveCTAValue => ({
-  data: {
-    actionType: "link",
-    cta: {
-      field: "",
-      constantValue: {
-        ctaType: "textAndLink",
-        label: {
-          defaultValue: label,
-          hasLocalizedValue: "true",
-        },
-        link: {
-          defaultValue: "#",
-          hasLocalizedValue: "true",
-        },
-        linkType: "URL",
-      },
-      constantValueEnabled: true,
-      selectedType: "textAndLink",
-    },
-    openInNewTab: false,
-    buttonText: {
-      defaultValue: label,
-      hasLocalizedValue: "true",
-    },
-    customId: "",
-    customClass: "",
-    dataAttributes: [],
-    ariaLabel: {
-      defaultValue: label,
-      hasLocalizedValue: "true",
-    },
-  },
-  styles: {
-    variant,
-    color,
-    button: {
-      fontFamily: "default",
-      fontSize: "default",
-      fontWeight: "default",
-      fontStyle: "default",
-      textTransform: "default",
-      letterSpacing: "default",
-      borderRadius: "default",
-    },
-    link: {
-      fontFamily: "default",
-      fontSize: "default",
-      fontWeight: "default",
-      fontStyle: "default",
-      textTransform: "default",
-      letterSpacing: "default",
-      includeCaret: "default",
-    },
-  },
-});
+): ComprehensiveCTAValue => createCta({ label, color, variant });
 
 const BarSocialDiningHeroSectionFields: YextFields<BarSocialDiningHeroSectionProps> =
   {
@@ -420,7 +160,7 @@ const BarSocialDiningHeroSectionFields: YextFields<BarSocialDiningHeroSectionPro
         aspectRatio: {
           label: "Aspect Ratio",
           type: "basicSelector",
-          options: "ASPECT_RATIO",
+          options: aspectRatioOptions,
         },
         imageConstrain: {
           label: "Image Constrain",
@@ -455,10 +195,6 @@ const BarSocialDiningHeroSectionComponent: PuckComponent<
 > = ({ id, ...props }) => {
   const streamDocument = useDocument();
   const locale = streamDocument.locale ?? "en";
-  const sectionForeground = resolveTextColor(
-    undefined,
-    props.section.backgroundColor,
-  );
   const resolvedEyebrow = resolveComponentData(
     props.eyebrow.text,
     locale,
@@ -524,11 +260,14 @@ const BarSocialDiningHeroSectionComponent: PuckComponent<
               }
             }
           `}</style>
-        <section
+      <Background
+        as="section"
+        background={props.section.backgroundColor}
           className={heroScopeClass}
           style={{
-            backgroundColor: themeColorToCss(
-              props.section.backgroundColor.selectedColor,
+            ...getSurfaceColorStyle(
+              props.section.backgroundColor,
+              streamDocument,
             ),
           }}
         >
@@ -542,10 +281,10 @@ const BarSocialDiningHeroSectionComponent: PuckComponent<
             <div
               style={{
                 alignItems: "center",
-                backgroundColor: themeColorToCss(
-                  props.section.backgroundColor.selectedColor,
+                ...getSurfaceColorStyle(
+                  props.section.backgroundColor,
+                  streamDocument,
                 ),
-                color: sectionForeground,
                 display: "flex",
                 justifyContent: "center",
                 padding: "48px 32px",
@@ -704,7 +443,7 @@ const BarSocialDiningHeroSectionComponent: PuckComponent<
               </EntityField>
             ) : null}
           </div>
-        </section>
+      </Background>
       </AnalyticsScopeProvider>
     </VisibilityWrapper>
   );
@@ -713,7 +452,9 @@ const BarSocialDiningHeroSectionComponent: PuckComponent<
 export const BarSocialDiningHeroSection: YextComponentConfig<BarSocialDiningHeroSectionProps> =
   {
     label: "Hero Section",
-    fields: toPuckFields(BarSocialDiningHeroSectionFields),
+    fields: toPuckFields<BarSocialDiningHeroSectionProps>(
+      BarSocialDiningHeroSectionFields,
+    ),
     defaultProps: {
       section: {
         backgroundColor: {

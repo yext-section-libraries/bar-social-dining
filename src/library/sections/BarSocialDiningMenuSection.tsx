@@ -4,18 +4,19 @@ import type { PuckComponent } from "@puckeditor/core";
 import * as React from "react";
 import { AnalyticsScopeProvider } from "@yext/pages-components";
 import {
+  Background,
   ComprehensiveCTA,
   EntityField,
-  MaybeRTF,
   createItemSource,
   getAnalyticsScopeHash,
   getDefaultRTF,
+  getSurfaceColorStyle,
+  getThemeColorCssValue,
   resolveComponentData,
   toPuckFields,
   useDocument,
   type ComprehensiveCTAValue,
   type EnhancedTranslatableCTA,
-  type RichText,
   type StyledImageValue,
   type StyledTextValue,
   type ThemeColor,
@@ -26,6 +27,15 @@ import {
   type YextEntityField,
   VisibilityWrapper,
 } from "@yext/visual-editor";
+import { createCta } from "../shared/createCta";
+import { aspectRatioOptions } from "../shared/fieldOptions";
+import {
+  getReadableForegroundColor,
+  getScopedTypographyCss,
+  getTextStyle as textStyle,
+  hasExplicitThemeColor,
+  renderRichText,
+} from "../shared/sectionStyles";
 
 type StyledTextProps = {
   text: YextEntityField<TranslatableString>;
@@ -52,62 +62,8 @@ type CardStyles = {
   };
 };
 
-const createMenuCardCta = (label: string): ComprehensiveCTAValue => ({
-  data: {
-    actionType: "link",
-    cta: {
-      field: "",
-      constantValue: {
-        ctaType: "textAndLink",
-        label: {
-          defaultValue: label,
-          hasLocalizedValue: "true",
-        },
-        link: {
-          defaultValue: "#",
-          hasLocalizedValue: "true",
-        },
-        linkType: "URL",
-      },
-      constantValueEnabled: true,
-      selectedType: "textAndLink",
-    },
-    openInNewTab: false,
-    buttonText: {
-      defaultValue: label,
-      hasLocalizedValue: "true",
-    },
-    customId: "",
-    customClass: "",
-    dataAttributes: [],
-    ariaLabel: {
-      defaultValue: label,
-      hasLocalizedValue: "true",
-    },
-  },
-  styles: {
-    variant: "secondary",
-    color: undefined,
-    button: {
-      fontFamily: "default",
-      fontSize: "default",
-      fontWeight: "default",
-      fontStyle: "default",
-      textTransform: "default",
-      letterSpacing: "default",
-      borderRadius: "default",
-    },
-    link: {
-      fontFamily: "default",
-      fontSize: "default",
-      fontWeight: "default",
-      fontStyle: "default",
-      textTransform: "default",
-      letterSpacing: "default",
-      includeCaret: "default",
-    },
-  },
-});
+const createMenuCardCta = (label: string): ComprehensiveCTAValue =>
+  createCta({ label, variant: "secondary" });
 
 const menuItemsSource = createItemSource<MenuItemProps>({
   label: "Menu Items",
@@ -270,217 +226,8 @@ type BarSocialDiningMenuSectionProps = {
   cardCta: ComprehensiveCTAValue;
 };
 
-const themeColorToCss = (selectedColor?: string): string | undefined => {
-  if (!selectedColor) {
-    return undefined;
-  }
-
-  if (selectedColor.startsWith("[") && selectedColor.endsWith("]")) {
-    return selectedColor.slice(1, -1);
-  }
-
-  const paletteMap: Record<string, string> = {
-    white: "#ffffff",
-    "palette-primary": "var(--colors-palette-primary)",
-    "palette-secondary": "var(--colors-palette-secondary)",
-    "palette-tertiary": "var(--colors-palette-tertiary)",
-    "palette-quaternary": "var(--colors-palette-quaternary)",
-    "palette-primary-contrast": "var(--colors-palette-primary-contrast)",
-    "palette-secondary-contrast": "var(--colors-palette-secondary-contrast)",
-    "palette-tertiary-contrast": "var(--colors-palette-tertiary-contrast)",
-    "palette-quaternary-contrast": "var(--colors-palette-quaternary-contrast)",
-    "palette-primary-light": "hsl(from var(--colors-palette-primary) h s 98)",
-    "palette-secondary-light":
-      "hsl(from var(--colors-palette-secondary) h s 98)",
-    "palette-tertiary-light": "hsl(from var(--colors-palette-tertiary) h s 98)",
-    "palette-quaternary-light":
-      "hsl(from var(--colors-palette-quaternary) h s 98)",
-    "palette-primary-dark": "hsl(from var(--colors-palette-primary) h s 20)",
-    "palette-secondary-dark":
-      "hsl(from var(--colors-palette-secondary) h s 20)",
-  };
-
-  return paletteMap[selectedColor] ?? selectedColor;
-};
-
-const hasExplicitThemeColor = (color?: ThemeColor): color is ThemeColor => {
-  return Boolean(color?.selectedColor && color.selectedColor !== "default");
-};
-
-const getReadableForegroundColor = (surfaceColor: ThemeColor): ThemeColor => {
-  switch (surfaceColor.selectedColor) {
-    case "white":
-    case "palette-primary-light":
-    case "palette-secondary-light":
-    case "palette-tertiary-light":
-    case "palette-quaternary-light":
-      return {
-        selectedColor: "black",
-        contrastingColor: surfaceColor.selectedColor,
-      };
-    case "black":
-    case "palette-primary-dark":
-    case "palette-secondary-dark":
-      return {
-        selectedColor: "white",
-        contrastingColor: surfaceColor.selectedColor,
-      };
-    case "palette-primary":
-      return {
-        selectedColor: "palette-primary-contrast",
-        contrastingColor: surfaceColor.selectedColor,
-      };
-    case "palette-secondary":
-      return {
-        selectedColor: "palette-secondary-contrast",
-        contrastingColor: surfaceColor.selectedColor,
-      };
-    case "palette-tertiary":
-      return {
-        selectedColor: "palette-tertiary-contrast",
-        contrastingColor: surfaceColor.selectedColor,
-      };
-    case "palette-quaternary":
-      return {
-        selectedColor: "palette-quaternary-contrast",
-        contrastingColor: surfaceColor.selectedColor,
-      };
-    default:
-      return {
-        selectedColor: surfaceColor.contrastingColor || "black",
-        contrastingColor: surfaceColor.selectedColor,
-      };
-  }
-};
-
-const resolveTextColor = (
-  fontColor: ThemeColor | undefined,
-  surfaceColor: ThemeColor,
-): string | undefined => {
-  return themeColorToCss(
-    (hasExplicitThemeColor(fontColor)
-      ? fontColor
-      : getReadableForegroundColor(surfaceColor)
-    ).selectedColor,
-  );
-};
-
-const renderRichText = (
-  value: unknown,
-  richTextStyleOverrides: StyledTextValue & { color?: ThemeColor },
-): React.ReactNode => {
-  if (React.isValidElement(value)) {
-    return value;
-  }
-
-  return (
-    <MaybeRTF
-      data={value as RichText | string | undefined}
-      richTextStyleOverrides={richTextStyleOverrides}
-    />
-  );
-};
-
 const menuScopeClass = "bar-social-dining-menu";
-const menuScopedTypographyCss = `
-  .${menuScopeClass} p {
-    font-family: var(--fontFamily-body-fontFamily);
-    font-size: var(--fontSize-body-fontSize);
-    line-height: 1.5;
-    font-weight: var(--fontWeight-body-fontWeight);
-    font-style: var(--fontStyle-body-fontStyle);
-    text-transform: var(--textTransform-body-textTransform);
-  }
-
-  .${menuScopeClass} li {
-    font-family: var(--fontFamily-body-fontFamily);
-    font-size: var(--fontSize-body-fontSize);
-    line-height: 1.5;
-    font-weight: var(--fontWeight-body-fontWeight);
-    font-style: var(--fontStyle-body-fontStyle);
-    text-transform: var(--textTransform-body-textTransform);
-  }
-
-  .${menuScopeClass} h1 {
-    font-family: var(--fontFamily-h1-fontFamily);
-    font-size: var(--fontSize-h1-fontSize);
-    line-height: 1.2;
-    font-weight: var(--fontWeight-h1-fontWeight);
-    font-style: var(--fontStyle-h1-fontStyle);
-    text-transform: var(--textTransform-h1-textTransform);
-  }
-
-  .${menuScopeClass} h2 {
-    font-family: var(--fontFamily-h2-fontFamily);
-    font-size: var(--fontSize-h2-fontSize);
-    line-height: 1.2;
-    font-weight: var(--fontWeight-h2-fontWeight);
-    font-style: var(--fontStyle-h2-fontStyle);
-    text-transform: var(--textTransform-h2-textTransform);
-  }
-
-  .${menuScopeClass} h3 {
-    font-family: var(--fontFamily-h3-fontFamily);
-    font-size: var(--fontSize-h3-fontSize);
-    line-height: 1.2;
-    font-weight: var(--fontWeight-h3-fontWeight);
-    font-style: var(--fontStyle-h3-fontStyle);
-    text-transform: var(--textTransform-h3-textTransform);
-  }
-
-  .${menuScopeClass} h4 {
-    font-family: var(--fontFamily-h4-fontFamily);
-    font-size: var(--fontSize-h4-fontSize);
-    line-height: 1.2;
-    font-weight: var(--fontWeight-h4-fontWeight);
-    font-style: var(--fontStyle-h4-fontStyle);
-    text-transform: var(--textTransform-h4-textTransform);
-  }
-
-  .${menuScopeClass} h5 {
-    font-family: var(--fontFamily-h5-fontFamily);
-    font-size: var(--fontSize-h5-fontSize);
-    line-height: 1.2;
-    font-weight: var(--fontWeight-h5-fontWeight);
-    font-style: var(--fontStyle-h5-fontStyle);
-    text-transform: var(--textTransform-h5-textTransform);
-  }
-
-  .${menuScopeClass} h6 {
-    font-family: var(--fontFamily-h6-fontFamily);
-    font-size: var(--fontSize-h6-fontSize);
-    line-height: 1.2;
-    font-weight: var(--fontWeight-h6-fontWeight);
-    font-style: var(--fontStyle-h6-fontStyle);
-    text-transform: var(--textTransform-h6-textTransform);
-  }
-
-  .${menuScopeClass} .bar-social-dining-link-typography a {
-    font-family: var(--fontFamily-link-fontFamily);
-    font-size: var(--fontSize-link-fontSize);
-    font-weight: var(--fontWeight-link-fontWeight);
-    font-style: var(--fontStyle-link-fontStyle);
-    line-height: 1.5;
-    text-decoration: underline;
-    text-transform: var(--textTransform-link-textTransform);
-    letter-spacing: var(--letterSpacing-link-letterSpacing);
-  }
-
-`;
-
-const textStyle = (
-  styles: StyledTextValue,
-  fontColor: ThemeColor | undefined,
-  surfaceColor: ThemeColor,
-): React.CSSProperties => ({
-  color: resolveTextColor(fontColor, surfaceColor),
-  fontFamily: styles.fontFamily === "default" ? undefined : styles.fontFamily,
-  fontSize: styles.fontSize === "default" ? undefined : styles.fontSize,
-  fontStyle: styles.fontStyle === "default" ? undefined : styles.fontStyle,
-  fontWeight: styles.fontWeight === "default" ? undefined : styles.fontWeight,
-  textTransform:
-    styles.textTransform === "default" ? undefined : styles.textTransform,
-});
+const menuScopedTypographyCss = getScopedTypographyCss(menuScopeClass);
 
 const BarSocialDiningMenuSectionFields =
   toPuckFields<BarSocialDiningMenuSectionProps>({
@@ -593,7 +340,7 @@ const BarSocialDiningMenuSectionFields =
             aspectRatio: {
               label: "Aspect Ratio",
               type: "basicSelector",
-              options: "ASPECT_RATIO",
+              options: aspectRatioOptions,
             },
             imageConstrain: {
               label: "Image Constrain",
@@ -645,11 +392,14 @@ const BarSocialDiningMenuSectionComponent: PuckComponent<
         name={`BarSocialDiningMenuSection${getAnalyticsScopeHash(id)}`}
       >
         <style>{menuScopedTypographyCss}</style>
-        <section
+      <Background
+        as="section"
+        background={props.section.backgroundColor}
           className={menuScopeClass}
           style={{
-            backgroundColor: themeColorToCss(
-              props.section.backgroundColor.selectedColor,
+            ...getSurfaceColorStyle(
+              props.section.backgroundColor,
+              streamDocument,
             ),
             padding: "72px 24px",
           }}
@@ -711,7 +461,6 @@ const BarSocialDiningMenuSectionComponent: PuckComponent<
                         item.description,
                         locale,
                         streamDocument,
-                        { richTextStyleOverrides: descriptionStyleOverrides },
                       )
                     : undefined;
                   const resolvedDescriptionText = item.description
@@ -722,11 +471,9 @@ const BarSocialDiningMenuSectionComponent: PuckComponent<
                         { output: "plainText" },
                       )
                     : "";
-                  const resolvedImage = resolveComponentData(
-                    item.image,
-                    locale,
-                    streamDocument,
-                  );
+                  const resolvedImage: unknown = item.image
+                    ? resolveComponentData(item.image, locale, streamDocument)
+                    : undefined;
                   const resolvedImageUrl =
                     typeof resolvedImage === "object" &&
                     resolvedImage !== null &&
@@ -791,8 +538,9 @@ const BarSocialDiningMenuSectionComponent: PuckComponent<
                     <article
                       key={`${titleText || "item"}-${index}`}
                       style={{
-                        backgroundColor: themeColorToCss(
-                          props.cardBackgroundColor.selectedColor,
+                        ...getSurfaceColorStyle(
+                          props.cardBackgroundColor,
+                          streamDocument,
                         ),
                         border: "1px solid rgba(23, 18, 25, 0.85)",
                         display: "flex",
@@ -804,7 +552,7 @@ const BarSocialDiningMenuSectionComponent: PuckComponent<
                         style={{
                           alignItems: "center",
                           backgroundColor: hasCardImage
-                            ? themeColorToCss(
+                            ? getThemeColorCssValue(
                                 props.mediaFrameBackgroundColor.selectedColor,
                               )
                             : undefined,
@@ -947,7 +695,7 @@ const BarSocialDiningMenuSectionComponent: PuckComponent<
               </div>
             </EntityField>
           </div>
-        </section>
+      </Background>
       </AnalyticsScopeProvider>
     </VisibilityWrapper>
   );
