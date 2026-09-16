@@ -2,7 +2,9 @@ import type { SectionConfig } from "@yext/visual-editor";
 
 import type { PuckComponent } from "@puckeditor/core";
 import { AnalyticsScopeProvider } from "@yext/pages-components";
+import { useTranslation } from "react-i18next";
 import {
+  msg,
   Background,
   EntityField,
   getSurfaceColorStyle,
@@ -17,6 +19,7 @@ import {
   VisibilityWrapper,
   getAggregateRating,
   getAnalyticsScopeHash,
+  pt,
   resolveComponentData,
   toPuckFields,
   useDocument,
@@ -62,53 +65,53 @@ const reviewsScopedTypographyCss = getScopedTypographyCss(reviewsScopeClass);
 const BarSocialDiningReviewsSectionFields: YextFields<BarSocialDiningReviewsSectionProps> =
   {
     section: {
-      label: "Section",
+      label: msg("fields.section", "Section"),
       type: "object",
       objectFields: {
         backgroundColor: {
-          label: "Background Color",
+          label: msg("fields.backgroundColor", "Background Color"),
           type: "basicSelector",
           options: "BACKGROUND_COLOR",
         },
         visibleOnLivePage: {
-          label: "Visible on Live Page",
+          label: msg("fields.visibleOnLivePage", "Visible on Live Page"),
           type: "radio",
           options: [
-            { label: "Yes", value: true },
-            { label: "No", value: false },
+            { label: msg("fields.options.yes", "Yes"), value: true },
+            { label: msg("fields.options.no", "No"), value: false },
           ],
         },
       },
     },
     heading: {
-      label: "Heading",
+      label: msg("fields.heading", "Heading"),
       type: "object",
       objectFields: {
         text: {
           type: "entityField",
-          label: "Text",
+          label: msg("fields.text", "Text"),
           filter: {
             types: ["type.string"],
           },
         },
         styles: {
-          label: "Text Styles",
+          label: msg("fields.textStyles", "Text Styles"),
           type: "styledText",
         },
         fontColor: {
-          label: "Font Color",
+          label: msg("fields.fontColor", "Font Color"),
           type: "basicSelector",
           options: "SITE_COLOR",
         },
       },
     },
     cardBackgroundColor: {
-      label: "Card Background Color",
+      label: msg("fields.cardBackgroundColor", "Card Background Color"),
       type: "basicSelector",
       options: "BACKGROUND_COLOR",
     },
     starColor: {
-      label: "Star Color",
+      label: msg("fields.starColor", "Star Color"),
       type: "basicSelector",
       options: "SITE_COLOR",
     },
@@ -117,6 +120,7 @@ const BarSocialDiningReviewsSectionFields: YextFields<BarSocialDiningReviewsSect
 const BarSocialDiningReviewsSectionComponent: PuckComponent<
   BarSocialDiningReviewsSectionProps
 > = ({ id, ...props }) => {
+  const { t } = useTranslation();
   const streamDocument = useDocument<
     StreamDocument & { ref_reviewsAgg?: ReviewAggregate[] }
   >();
@@ -154,9 +158,9 @@ const BarSocialDiningReviewsSectionComponent: PuckComponent<
         name={`BarSocialDiningReviewsSection${getAnalyticsScopeHash(id)}`}
       >
         <style>{reviewsScopedTypographyCss}</style>
-      <Background
-        as="section"
-        background={props.section.backgroundColor}
+        <Background
+          as="section"
+          background={props.section.backgroundColor}
           className={reviewsScopeClass}
           style={{
             ...getSurfaceColorStyle(
@@ -174,7 +178,7 @@ const BarSocialDiningReviewsSectionComponent: PuckComponent<
           >
             <div style={{ marginBottom: "32px", textAlign: "center" }}>
               <EntityField
-                displayName="Heading"
+                displayName={pt("fields.heading", "Heading")}
                 fieldId={props.heading.text.field}
                 constantValueEnabled={props.heading.text.constantValueEnabled}
               >
@@ -200,8 +204,18 @@ const BarSocialDiningReviewsSectionComponent: PuckComponent<
                 }}
               >
                 {averageRating
-                  ? `${averageRating.toFixed(1)} stars based on ${reviewCount} reviews`
-                  : "No first-party reviews yet"}
+                  ? t(
+                      "reviewSummary",
+                      "{{averageRating}} stars based on {{reviewCount}} reviews",
+                      {
+                        averageRating: averageRating.toFixed(1),
+                        reviewCount,
+                      },
+                    )
+                  : t(
+                      "noFirstPartyReviewsYet",
+                      "No first-party reviews yet",
+                    )}
               </p>
             </div>
             {reviews.length ? (
@@ -244,8 +258,10 @@ const BarSocialDiningReviewsSectionComponent: PuckComponent<
                         }}
                       >
                         {typeof review.rating === "number"
-                          ? `${review.rating}/5 stars`
-                          : "Review"}
+                          ? t("ratingOutOfFiveStars", "{{rating}}/5 stars", {
+                              rating: review.rating,
+                            })
+                          : t("reviewLabel", "Review")}
                       </span>
                     </p>
                     <p
@@ -255,7 +271,11 @@ const BarSocialDiningReviewsSectionComponent: PuckComponent<
                         margin: "0 0 16px",
                       }}
                     >
-                      {review.content ?? "No first-party review content yet."}
+                      {review.content ??
+                        t(
+                          "noFirstPartyReviewContentYet",
+                          "No first-party review content yet.",
+                        )}
                     </p>
                     <h3
                       style={{
@@ -263,7 +283,8 @@ const BarSocialDiningReviewsSectionComponent: PuckComponent<
                         margin: 0,
                       }}
                     >
-                      {review.authorName ?? "Anonymous"}
+                      {review.authorName ??
+                        t("anonymousReviewer", "Anonymous")}
                     </h3>
                     {review.reviewDate ? (
                       <p
@@ -280,12 +301,14 @@ const BarSocialDiningReviewsSectionComponent: PuckComponent<
               </div>
             ) : (
               <p style={{ textAlign: "center" }}>
-                No first-party reviews. This section won&apos;t be displayed on
-                the live page.
+                {pt(
+                  "noReviews",
+                  "No first-party reviews. This section won't be displayed on the live page.",
+                )}
               </p>
             )}
           </div>
-      </Background>
+        </Background>
       </AnalyticsScopeProvider>
     </VisibilityWrapper>
   );
@@ -329,9 +352,7 @@ export const BarSocialDiningReviewsSection: YextComponentConfig<BarSocialDiningR
       },
       starColor: undefined,
     },
-    render: (props) => (
-      <BarSocialDiningReviewsSectionComponent {...props} />
-    ),
+    render: (props) => <BarSocialDiningReviewsSectionComponent {...props} />,
   };
 
 export const config: SectionConfig = {

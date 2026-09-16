@@ -5,6 +5,7 @@ import type { PuckComponent } from "@puckeditor/core";
 import * as React from "react";
 import { AnalyticsScopeProvider, useAnalytics } from "@yext/pages-components";
 import {
+  msg,
   Background,
   EntityField,
   Image,
@@ -338,103 +339,103 @@ const faqScopedTypographyCss = getScopedTypographyCss(faqScopeClass);
 const BarSocialDiningFaqSectionFields: YextFields<BarSocialDiningFaqSectionProps> =
   {
     section: {
-      label: "Section",
+      label: msg("fields.section", "Section"),
       type: "object",
       objectFields: {
         visibleOnLivePage: {
-          label: "Visible on Live Page",
+          label: msg("fields.visibleOnLivePage", "Visible on Live Page"),
           type: "radio",
           options: [
-            { label: "Yes", value: true },
-            { label: "No", value: false },
+            { label: msg("fields.options.yes", "Yes"), value: true },
+            { label: msg("fields.options.no", "No"), value: false },
           ],
         },
         backgroundColor: {
-          label: "Background Color",
+          label: msg("fields.backgroundColor", "Background Color"),
           type: "basicSelector",
           options: "BACKGROUND_COLOR",
         },
       },
     },
     heading: {
-      label: "Heading",
+      label: msg("fields.heading", "Heading"),
       type: "object",
       objectFields: {
         text: {
           type: "entityField",
-          label: "Text",
+          label: msg("fields.text", "Text"),
           filter: {
             types: ["type.string"],
           },
         },
         styles: {
-          label: "Text Styles",
+          label: msg("fields.textStyles", "Text Styles"),
           type: "styledText",
         },
         fontColor: {
-          label: "Font Color",
+          label: msg("fields.fontColor", "Font Color"),
           type: "basicSelector",
           options: "SITE_COLOR",
         },
       },
     },
     questionBackgroundColor: {
-      label: "Question Background Color",
+      label: msg("fields.questionBackgroundColor", "Question Background Color"),
       type: "basicSelector",
       options: "BACKGROUND_COLOR",
     },
     answerBackgroundColor: {
-      label: "Answer Background Color",
+      label: msg("fields.answerBackgroundColor", "Answer Background Color"),
       type: "basicSelector",
       options: "BACKGROUND_COLOR",
     },
     items: faqItemsSource.field,
     itemStyles: {
-      label: "FAQ Styles",
+      label: msg("fields.faqStyles", "FAQ Styles"),
       type: "object",
       objectFields: {
         question: {
-          label: "Question",
+          label: msg("fields.question", "Question"),
           type: "object",
           objectFields: {
-            styles: { label: "Text Styles", type: "styledText" },
+            styles: { label: msg("fields.textStyles", "Text Styles"), type: "styledText" },
             fontColor: {
-              label: "Font Color",
+              label: msg("fields.fontColor", "Font Color"),
               type: "basicSelector",
               options: "SITE_COLOR",
             },
           },
         },
         answer: {
-          label: "Answer",
+          label: msg("fields.answer", "Answer"),
           type: "object",
           objectFields: {
-            styles: { label: "Text Styles", type: "styledText" },
+            styles: { label: msg("fields.textStyles", "Text Styles"), type: "styledText" },
             fontColor: {
-              label: "Font Color",
+              label: msg("fields.fontColor", "Font Color"),
               type: "basicSelector",
               options: "SITE_COLOR",
             },
           },
         },
         image: {
-          label: "Image",
+          label: msg("fields.image", "Image"),
           type: "object",
           objectFields: {
             aspectRatio: {
-              label: "Aspect Ratio",
+              label: msg("fields.aspectRatio", "Aspect Ratio"),
               type: "basicSelector",
               options: aspectRatioOptions,
             },
             imageConstrain: {
-              label: "Image Constrain",
+              label: msg("fields.imageConstrain", "Image Constrain"),
               type: "select",
               options: [
-                { label: "Fixed", value: "fixed" },
-                { label: "Filled", value: "filled" },
+                { label: msg("fields.options.fixed", "Fixed"), value: "fixed" },
+                { label: msg("fields.options.filled", "Filled"), value: "filled" },
               ],
             },
-            styles: { label: "Image Styles", type: "styledImage" },
+            styles: { label: msg("fields.imageStyles", "Image Styles"), type: "styledImage" },
           },
         },
       },

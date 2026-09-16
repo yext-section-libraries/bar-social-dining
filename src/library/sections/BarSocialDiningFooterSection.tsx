@@ -4,6 +4,7 @@ import * as React from "react";
 import type { PuckComponent } from "@puckeditor/core";
 import { AnalyticsScopeProvider } from "@yext/pages-components";
 import {
+  msg,
   Background,
   ComprehensiveCTA,
   EntityField,
@@ -151,82 +152,82 @@ const footerLinkColor: ThemeColor = {
 const BarSocialDiningFooterSectionFields: YextFields<BarSocialDiningFooterSectionProps> =
   {
     section: {
-      label: "Section",
+      label: msg("fields.section", "Section"),
       type: "object",
       objectFields: {
         backgroundColor: {
-          label: "Background Color",
+          label: msg("fields.backgroundColor", "Background Color"),
           type: "basicSelector",
           options: "BACKGROUND_COLOR",
         },
         visibleOnLivePage: {
-          label: "Visible on Live Page",
+          label: msg("fields.visibleOnLivePage", "Visible on Live Page"),
           type: "radio",
           options: [
-            { label: "Yes", value: true },
-            { label: "No", value: false },
+            { label: msg("fields.options.yes", "Yes"), value: true },
+            { label: msg("fields.options.no", "No"), value: false },
           ],
         },
       },
     },
     logoImage: {
-      label: "Logo Image",
+      label: msg("fields.logoImage", "Logo Image"),
       type: "object",
       objectFields: {
         image: {
           type: "entityField",
-          label: "Image",
+          label: msg("fields.image", "Image"),
           filter: {
             types: ["type.image"],
           },
         },
         aspectRatio: {
-          label: "Aspect Ratio",
+          label: msg("fields.aspectRatio", "Aspect Ratio"),
           type: "basicSelector",
           options: aspectRatioOptions,
         },
         imageConstrain: {
-          label: "Image Constrain",
+          label: msg("fields.imageConstrain", "Image Constrain"),
           type: "select",
           options: [
-            { label: "Fixed", value: "fixed" },
-            { label: "Filled", value: "filled" },
+            { label: msg("fields.options.fixed", "Fixed"), value: "fixed" },
+            { label: msg("fields.options.filled", "Filled"), value: "filled" },
           ],
         },
         styles: {
-          label: "Image Styles",
+          label: msg("fields.imageStyles", "Image Styles"),
           type: "styledImage",
         },
       },
     },
     followUsHeading: {
-      label: "Follow Us Heading",
+      label: msg("fields.followUsHeading", "Follow Us Heading"),
       type: "object",
       objectFields: {
         text: {
           type: "entityField",
-          label: "Text",
+          label: msg("fields.text", "Text"),
           filter: {
             types: ["type.string"],
           },
         },
         styles: {
-          label: "Text Styles",
+          label: msg("fields.textStyles", "Text Styles"),
           type: "styledText",
         },
         fontColor: {
-          label: "Font Color",
+          label: msg("fields.fontColor", "Font Color"),
           type: "basicSelector",
           options: "SITE_COLOR",
         },
       },
     },
     socialLinks: {
-      label: "Social Links",
+      label: msg("fields.socialLinks", "Social Links"),
       type: "array",
       arrayFields: {
         cta: {
-          label: "Link",
+          label: msg("fields.link", "Link"),
           type: "comprehensiveCTA",
         },
       },
@@ -236,66 +237,66 @@ const BarSocialDiningFooterSectionFields: YextFields<BarSocialDiningFooterSectio
       getItemSummary: (item) => getCtaLabel(item.cta),
     },
     contactHeading: {
-      label: "Contact Heading",
+      label: msg("fields.contactHeading", "Contact Heading"),
       type: "object",
       objectFields: {
         text: {
           type: "entityField",
-          label: "Text",
+          label: msg("fields.text", "Text"),
           filter: {
             types: ["type.string"],
           },
         },
         styles: {
-          label: "Text Styles",
+          label: msg("fields.textStyles", "Text Styles"),
           type: "styledText",
         },
         fontColor: {
-          label: "Font Color",
+          label: msg("fields.fontColor", "Font Color"),
           type: "basicSelector",
           options: "SITE_COLOR",
         },
       },
     },
     contactBody: {
-      label: "Contact Body",
+      label: msg("fields.contactBody", "Contact Body"),
       type: "object",
       objectFields: {
         text: {
           type: "entityField",
-          label: "Text",
+          label: msg("fields.text", "Text"),
           filter: {
             types: ["type.rich_text_v2"],
           },
         },
         styles: {
-          label: "Text Styles",
+          label: msg("fields.textStyles", "Text Styles"),
           type: "styledText",
         },
         fontColor: {
-          label: "Font Color",
+          label: msg("fields.fontColor", "Font Color"),
           type: "basicSelector",
           options: "SITE_COLOR",
         },
       },
     },
     phones: {
-      label: "Phones",
+      label: msg("fields.phones", "Phones"),
       type: "object",
       objectFields: {
         items: {
-          label: "Items",
+          label: msg("fields.items", "Items"),
           type: "array",
           arrayFields: {
             number: {
               type: "entityField",
-              label: "Number",
+              label: msg("fields.number", "Number"),
               filter: {
                 types: ["type.phone"],
               },
             },
             label: {
-              label: "Label",
+              label: msg("fields.label", "Label"),
               type: "text",
             },
           },
@@ -310,30 +311,30 @@ const BarSocialDiningFooterSectionFields: YextFields<BarSocialDiningFooterSectio
           getItemSummary: (item) => item.label || item.number?.field || "Phone",
         },
         phoneFormat: {
-          label: "Phone Format",
+          label: msg("fields.phoneFormat", "Phone Format"),
           type: "radio",
           options: [
-            { label: "Domestic", value: "domestic" },
-            { label: "International", value: "international" },
+            { label: msg("fields.options.domestic", "Domestic"), value: "domestic" },
+            { label: msg("fields.options.international", "International"), value: "international" },
           ],
         },
         includeHyperlink: {
-          label: "Include Hyperlink",
+          label: msg("fields.includeHyperlink", "Include Hyperlink"),
           type: "radio",
           options: [
-            { label: "Yes", value: true },
-            { label: "No", value: false },
+            { label: msg("fields.options.yes", "Yes"), value: true },
+            { label: msg("fields.options.no", "No"), value: false },
           ],
         },
       },
     },
     emails: {
-      label: "Emails",
+      label: msg("fields.emails", "Emails"),
       type: "object",
       objectFields: {
         list: {
           type: "entityField",
-          label: "Emails",
+          label: msg("fields.emails", "Emails"),
           filter: {
             types: ["type.string"],
             includeListsOnly: true,
@@ -344,33 +345,33 @@ const BarSocialDiningFooterSectionFields: YextFields<BarSocialDiningFooterSectio
       },
     },
     resourcesHeading: {
-      label: "Resources Heading",
+      label: msg("fields.resourcesHeading", "Resources Heading"),
       type: "object",
       objectFields: {
         text: {
           type: "entityField",
-          label: "Text",
+          label: msg("fields.text", "Text"),
           filter: {
             types: ["type.string"],
           },
         },
         styles: {
-          label: "Text Styles",
+          label: msg("fields.textStyles", "Text Styles"),
           type: "styledText",
         },
         fontColor: {
-          label: "Font Color",
+          label: msg("fields.fontColor", "Font Color"),
           type: "basicSelector",
           options: "SITE_COLOR",
         },
       },
     },
     resourceLinks: {
-      label: "Resource Links",
+      label: msg("fields.resourceLinks", "Resource Links"),
       type: "array",
       arrayFields: {
         cta: {
-          label: "Link",
+          label: msg("fields.link", "Link"),
           type: "comprehensiveCTA",
         },
       },
@@ -380,22 +381,22 @@ const BarSocialDiningFooterSectionFields: YextFields<BarSocialDiningFooterSectio
       getItemSummary: (item) => getCtaLabel(item.cta),
     },
     copyrightText: {
-      label: "Copyright Text",
+      label: msg("fields.copyrightText", "Copyright Text"),
       type: "object",
       objectFields: {
         text: {
           type: "entityField",
-          label: "Text",
+          label: msg("fields.text", "Text"),
           filter: {
             types: ["type.rich_text_v2"],
           },
         },
         styles: {
-          label: "Text Styles",
+          label: msg("fields.textStyles", "Text Styles"),
           type: "styledText",
         },
         fontColor: {
-          label: "Font Color",
+          label: msg("fields.fontColor", "Font Color"),
           type: "basicSelector",
           options: "SITE_COLOR",
         },
