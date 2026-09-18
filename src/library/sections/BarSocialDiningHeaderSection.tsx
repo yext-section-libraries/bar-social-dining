@@ -285,10 +285,28 @@ const BarSocialDiningHeaderSectionFields: YextFields<BarSocialDiningHeaderSectio
       label: msg("fields.variant", "Variant"),
       type: "select",
       options: [
-        { label: msg("fields.options.centeredLogoSplitNav", "Centered Logo Split Nav"), value: "centerLogoSplitNav" },
-        { label: msg("fields.options.logoLeftInlineNav", "Logo Left Inline Nav"), value: "logoLeftInlineNav" },
-        { label: msg("fields.options.stackedNavBelow", "Stacked Nav Below"), value: "stackedNavBelow" },
-        { label: msg("fields.options.utilityTopRow", "Utility Top Row"), value: "utilityTopRow" },
+        {
+          label: msg(
+            "fields.options.centeredLogoSplitNav",
+            "Centered Logo Split Nav",
+          ),
+          value: "centerLogoSplitNav",
+        },
+        {
+          label: msg(
+            "fields.options.logoLeftInlineNav",
+            "Logo Left Inline Nav",
+          ),
+          value: "logoLeftInlineNav",
+        },
+        {
+          label: msg("fields.options.stackedNavBelow", "Stacked Nav Below"),
+          value: "stackedNavBelow",
+        },
+        {
+          label: msg("fields.options.utilityTopRow", "Utility Top Row"),
+          value: "utilityTopRow",
+        },
       ],
     },
     section: {
@@ -419,8 +437,14 @@ const BarSocialDiningHeaderSectionFields: YextFields<BarSocialDiningHeaderSectio
                   label: msg("fields.imageConstrain", "Image Constrain"),
                   type: "select",
                   options: [
-                    { label: msg("fields.options.fixed", "Fixed"), value: "fixed" },
-                    { label: msg("fields.options.filled", "Filled"), value: "filled" },
+                    {
+                      label: msg("fields.options.fixed", "Fixed"),
+                      value: "fixed",
+                    },
+                    {
+                      label: msg("fields.options.filled", "Filled"),
+                      value: "filled",
+                    },
                   ],
                 },
                 styles: {
@@ -1155,7 +1179,7 @@ const BarSocialDiningHeaderSectionComponent: PuckComponent<
 
 export const BarSocialDiningHeaderSection: YextComponentConfig<BarSocialDiningHeaderSectionProps> =
   {
-    label: "Shared Header",
+    label: "Header",
     fields: BarSocialDiningHeaderSectionFields,
     defaultProps: {
       variant: "centerLogoSplitNav",
@@ -1292,7 +1316,7 @@ export const BarSocialDiningHeaderSection: YextComponentConfig<BarSocialDiningHe
 
 export const config: SectionConfig = {
   id: "BarSocialDiningHeaderSection",
-  displayName: "Shared Header",
-  description: "Shared Header",
+  displayName: "Header",
+  description: "Header",
   pageSetTypes: ["ENTITY", "DIRECTORY", "LOCATOR"],
 };

@@ -153,7 +153,6 @@ example data from the account's Knowledge Graph.
 
 ```ts
 yextVisualEditorPlugin({
-  sectionLibrary: true,
   localEditor: { enabled: true },
 });
 ```
