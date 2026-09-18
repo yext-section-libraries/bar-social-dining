@@ -2,6 +2,7 @@ import type { SectionConfig } from "@yext/visual-editor";
 
 import type { PuckComponent } from "@puckeditor/core";
 import {
+  msg,
   Background,
   EntityField,
   getSurfaceColorStyle,
@@ -32,40 +33,40 @@ type BarSocialDiningMapSectionProps = {
 const BarSocialDiningMapSectionFields: YextFields<BarSocialDiningMapSectionProps> =
   {
     section: {
-      label: "Section",
+      label: msg("fields.section", "Section"),
       type: "object",
       objectFields: {
         backgroundColor: {
-          label: "Background Color",
+          label: msg("fields.backgroundColor", "Background Color"),
           type: "basicSelector",
           options: "BACKGROUND_COLOR",
         },
         visibleOnLivePage: {
-          label: "Visible on Live Page",
+          label: msg("fields.visibleOnLivePage", "Visible on Live Page"),
           type: "radio",
           options: [
-            { label: "Yes", value: true },
-            { label: "No", value: false },
+            { label: msg("fields.options.yes", "Yes"), value: true },
+            { label: msg("fields.options.no", "No"), value: false },
           ],
         },
       },
     },
     map: {
-      label: "Map",
+      label: msg("fields.map", "Map"),
       type: "object",
       objectFields: {
         coordinate: {
           type: "entityField",
-          label: "Coordinates",
+          label: msg("fields.coordinates", "Coordinates"),
           filter: { types: ["type.coordinate"] },
         },
         mapStyle: {
-          label: "Mapbox Map Style",
+          label: msg("fields.mapboxMapStyle", "Mapbox Map Style"),
           type: "select",
           options: mapboxStaticMapStyleOptions,
         },
         zoom: {
-          label: "Zoom",
+          label: msg("fields.zoom", "Zoom"),
           type: "number",
           min: 0,
           max: 22,

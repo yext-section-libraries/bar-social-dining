@@ -11,6 +11,7 @@ import {
   useAnalytics,
 } from "@yext/pages-components";
 import {
+  msg,
   Background,
   ComprehensiveCTA,
   type ComprehensiveCTAValue,
@@ -30,8 +31,9 @@ import {
   getAnalyticsScopeHash,
   getSurfaceColorStyle,
   getThemeColorCssValue,
-  i18nComponentsInstance,
+  i18nPageInstance,
   normalizeLink,
+  pt,
   resolveComponentData,
   useDocument,
 } from "@yext/visual-editor";
@@ -202,7 +204,7 @@ const getTranslatableSummary = (
   }
 
   return (
-    resolveComponentData(value, i18nComponentsInstance.language, undefined) ||
+    resolveComponentData(value, i18nPageInstance.language, undefined) ||
     value.defaultValue ||
     fallback
   );
@@ -280,82 +282,100 @@ const SharedHeaderDefaultUtilityIcon = () => (
 const BarSocialDiningHeaderSectionFields: YextFields<BarSocialDiningHeaderSectionProps> =
   {
     variant: {
-      label: "Variant",
+      label: msg("fields.variant", "Variant"),
       type: "select",
       options: [
-        { label: "Centered Logo Split Nav", value: "centerLogoSplitNav" },
-        { label: "Logo Left Inline Nav", value: "logoLeftInlineNav" },
-        { label: "Stacked Nav Below", value: "stackedNavBelow" },
-        { label: "Utility Top Row", value: "utilityTopRow" },
+        {
+          label: msg(
+            "fields.options.centeredLogoSplitNav",
+            "Centered Logo Split Nav",
+          ),
+          value: "centerLogoSplitNav",
+        },
+        {
+          label: msg(
+            "fields.options.logoLeftInlineNav",
+            "Logo Left Inline Nav",
+          ),
+          value: "logoLeftInlineNav",
+        },
+        {
+          label: msg("fields.options.stackedNavBelow", "Stacked Nav Below"),
+          value: "stackedNavBelow",
+        },
+        {
+          label: msg("fields.options.utilityTopRow", "Utility Top Row"),
+          value: "utilityTopRow",
+        },
       ],
     },
     section: {
-      label: "Section",
+      label: msg("fields.section", "Section"),
       type: "object",
       objectFields: {
         backgroundColor: {
-          label: "Background Color",
+          label: msg("fields.backgroundColor", "Background Color"),
           type: "basicSelector",
           options: "BACKGROUND_COLOR",
         },
         dividerColor: {
-          label: "Divider Color",
+          label: msg("fields.dividerColor", "Divider Color"),
           type: "basicSelector",
           options: "SITE_COLOR",
         },
         visibleOnLivePage: {
-          label: "Visible on Live Page",
+          label: msg("fields.visibleOnLivePage", "Visible on Live Page"),
           type: "radio",
           options: [
-            { label: "Yes", value: true },
-            { label: "No", value: false },
+            { label: msg("fields.options.yes", "Yes"), value: true },
+            { label: msg("fields.options.no", "No"), value: false },
           ],
         },
       },
     },
     navigation: {
-      label: "Navigation",
+      label: msg("fields.navigation", "Navigation"),
       type: "object",
       objectFields: {
         show: {
-          label: "Show on Live Page",
+          label: msg("fields.showOnLivePage", "Show on Live Page"),
           type: "radio",
           options: [
-            { label: "Yes", value: true },
-            { label: "No", value: false },
+            { label: msg("fields.options.yes", "Yes"), value: true },
+            { label: msg("fields.options.no", "No"), value: false },
           ],
         },
         links: {
-          label: "Links",
+          label: msg("fields.links", "Links"),
           type: "array",
           arrayFields: {
             label: {
-              label: "Label",
+              label: msg("fields.label", "Label"),
               type: "translatableString",
             },
             link: {
-              label: "Link",
+              label: msg("fields.link", "Link"),
               type: "translatableString",
             },
             linkType: {
-              label: "Link Type",
+              label: msg("fields.linkType", "Link Type"),
               type: "select",
               options: linkTypeOptions,
             },
             normalizeLink: {
-              label: "Normalize Link",
+              label: msg("fields.normalizeLink", "Normalize Link"),
               type: "radio",
               options: [
-                { label: "Yes", value: true },
-                { label: "No", value: false },
+                { label: msg("fields.options.yes", "Yes"), value: true },
+                { label: msg("fields.options.no", "No"), value: false },
               ],
             },
             openInNewTab: {
-              label: "Open in New Tab",
+              label: msg("fields.openInNewTab", "Open in New Tab"),
               type: "radio",
               options: [
-                { label: "Yes", value: true },
-                { label: "No", value: false },
+                { label: msg("fields.options.yes", "Yes"), value: true },
+                { label: msg("fields.options.no", "No"), value: false },
               ],
             },
           },
@@ -370,90 +390,96 @@ const BarSocialDiningHeaderSectionFields: YextFields<BarSocialDiningHeaderSectio
             getTranslatableSummary(item.label, `Link ${index ?? 0}`),
         },
         fontColor: {
-          label: "Font Color",
+          label: msg("fields.fontColor", "Font Color"),
           type: "basicSelector",
           options: "SITE_COLOR",
         },
         styles: {
-          label: "Link Styles",
+          label: msg("fields.linkStyles", "Link Styles"),
           type: "styledLink",
           showIncludeCaretField: false,
         },
       },
     },
     utilities: {
-      label: "Utility Icons",
+      label: msg("fields.utilityIcons", "Utility Icons"),
       type: "object",
       objectFields: {
         show: {
-          label: "Show on Live Page",
+          label: msg("fields.showOnLivePage", "Show on Live Page"),
           type: "radio",
           options: [
-            { label: "Yes", value: true },
-            { label: "No", value: false },
+            { label: msg("fields.options.yes", "Yes"), value: true },
+            { label: msg("fields.options.no", "No"), value: false },
           ],
         },
         items: {
-          label: "Items",
+          label: msg("fields.items", "Items"),
           type: "array",
           arrayFields: {
             iconImage: {
-              label: "Icon Image",
+              label: msg("fields.iconImage", "Icon Image"),
               type: "object",
               objectFields: {
                 image: {
                   type: "entityField",
-                  label: "Image",
+                  label: msg("fields.image", "Image"),
                   filter: {
                     types: ["type.image"],
                   },
                 },
                 aspectRatio: {
-                  label: "Aspect Ratio",
+                  label: msg("fields.aspectRatio", "Aspect Ratio"),
                   type: "basicSelector",
                   options: aspectRatioOptions,
                 },
                 imageConstrain: {
-                  label: "Image Constrain",
+                  label: msg("fields.imageConstrain", "Image Constrain"),
                   type: "select",
                   options: [
-                    { label: "Fixed", value: "fixed" },
-                    { label: "Filled", value: "filled" },
+                    {
+                      label: msg("fields.options.fixed", "Fixed"),
+                      value: "fixed",
+                    },
+                    {
+                      label: msg("fields.options.filled", "Filled"),
+                      value: "filled",
+                    },
                   ],
                 },
                 styles: {
-                  label: "Image Styles",
+                  label: msg("fields.imageStyles", "Image Styles"),
                   type: "styledImage",
                 },
               },
             },
             label: {
-              label: "Label",
+              label: msg("fields.label", "Label"),
               type: "translatableString",
             },
             link: {
-              label: "Link",
+              label: msg("fields.link", "Link"),
               type: "translatableString",
             },
             linkType: {
-              label: "Link Type",
+              label: msg("fields.linkType", "Link Type"),
               type: "select",
               options: linkTypeOptions,
             },
             normalizeLink: {
-              label: "Normalize Link",
+              label: msg("fields.normalizeLink", "Normalize Link"),
               type: "radio",
               options: [
-                { label: "Yes", value: true },
-                { label: "No", value: false },
+                { label: msg("fields.options.yes", "Yes"), value: true },
+                { label: msg("fields.options.no", "No"), value: false },
               ],
             },
             openInNewTab: {
-              label: "Open in New Tab",
+              label: msg("fields.openInNewTab", "Open in New Tab"),
               type: "radio",
               options: [
-                { label: "Yes", value: true },
-                { label: "No", value: false },
+                { label: msg("fields.options.yes", "Yes"), value: true },
+                { label: msg("fields.options.no", "No"), value: false },
               ],
             },
           },
@@ -471,23 +497,23 @@ const BarSocialDiningHeaderSectionFields: YextFields<BarSocialDiningHeaderSectio
       },
     },
     cta: {
-      label: "Call to Actions",
+      label: msg("fields.callToActions", "Call to Actions"),
       type: "object",
       objectFields: {
         show: {
-          label: "Show on Live Page",
+          label: msg("fields.showOnLivePage", "Show on Live Page"),
           type: "radio",
           options: [
-            { label: "Yes", value: true },
-            { label: "No", value: false },
+            { label: msg("fields.options.yes", "Yes"), value: true },
+            { label: msg("fields.options.no", "No"), value: false },
           ],
         },
         items: {
-          label: "Items",
+          label: msg("fields.items", "Items"),
           type: "array",
           arrayFields: {
             cta: {
-              label: "CTA",
+              label: msg("fields.cta", "CTA"),
               type: "comprehensiveCTA",
             },
           },
@@ -533,46 +559,46 @@ const BarSocialDiningHeaderSectionFields: YextFields<BarSocialDiningHeaderSectio
       },
     },
     logoImage: {
-      label: "Logo Image",
+      label: msg("fields.logoImage", "Logo Image"),
       type: "object",
       objectFields: {
         show: {
-          label: "Show on Live Page",
+          label: msg("fields.showOnLivePage", "Show on Live Page"),
           type: "radio",
           options: [
-            { label: "Yes", value: true },
-            { label: "No", value: false },
+            { label: msg("fields.options.yes", "Yes"), value: true },
+            { label: msg("fields.options.no", "No"), value: false },
           ],
         },
         image: {
           type: "entityField",
-          label: "Image",
+          label: msg("fields.image", "Image"),
           filter: {
             types: ["type.image"],
           },
         },
         url: {
-          label: "URL",
+          label: msg("fields.url", "URL"),
           type: "entityField",
           filter: {
             types: ["type.string"],
           },
         },
         aspectRatio: {
-          label: "Aspect Ratio",
+          label: msg("fields.aspectRatio", "Aspect Ratio"),
           type: "basicSelector",
           options: aspectRatioOptions,
         },
         imageConstrain: {
-          label: "Image Constrain",
+          label: msg("fields.imageConstrain", "Image Constrain"),
           type: "select",
           options: [
-            { label: "Fixed", value: "fixed" },
-            { label: "Filled", value: "filled" },
+            { label: msg("fields.options.fixed", "Fixed"), value: "fixed" },
+            { label: msg("fields.options.filled", "Filled"), value: "filled" },
           ],
         },
         styles: {
-          label: "Image Styles",
+          label: msg("fields.imageStyles", "Image Styles"),
           type: "styledImage",
         },
       },
@@ -611,9 +637,7 @@ const BarSocialDiningHeaderSectionComponent: PuckComponent<
       ? props.navigation.fontColor
       : undefined) ??
     getReadableForegroundColor(props.section.backgroundColor, streamDocument);
-  const dividerColorValue = getThemeColorCssValue(
-    props.section.dividerColor,
-  );
+  const dividerColorValue = getThemeColorCssValue(props.section.dividerColor);
   const dividerStyle = dividerColorValue
     ? ({ borderColor: dividerColorValue } as React.CSSProperties)
     : undefined;
@@ -704,7 +728,9 @@ const BarSocialDiningHeaderSectionComponent: PuckComponent<
     }
 
     const resolvedIconImage = iconImage as
-      ImageType | ComplexImageType | TranslatableAssetImage;
+      | ImageType
+      | ComplexImageType
+      | TranslatableAssetImage;
     const iconHeight = 32;
     const iconAspectRatio =
       iconImageProps.aspectRatio > 0 ? iconImageProps.aspectRatio : 1;
@@ -805,7 +831,7 @@ const BarSocialDiningHeaderSectionComponent: PuckComponent<
   );
 
   const renderNavigationLinks = (orientation: "row" | "column") => (
-    <nav aria-label="Primary navigation">
+    <nav aria-label={pt("primaryNavigation", "Primary Navigation")}>
       <ul
         className={
           orientation === "row"
@@ -844,19 +870,21 @@ const BarSocialDiningHeaderSectionComponent: PuckComponent<
         constantValueEnabled={props.logoImage.image.constantValueEnabled}
       >
         {!resolvedLogoImage ? (
-          <div
-            className="flex items-center justify-center rounded border border-dashed border-current/30 text-[10px] font-medium text-center"
-            style={{
-              height: "50px",
-              width:
-                props.logoImage.aspectRatio > 0
-                  ? `${50 * props.logoImage.aspectRatio}px`
-                  : "50px",
-              color: getThemeColorCssValue(navigationColor),
-            }}
-          >
-            Logo
-          </div>
+          props.puck.isEditing && (
+            <div
+              className="flex items-center justify-center rounded border border-dashed border-current/30 text-[10px] font-medium text-center"
+              style={{
+                height: "50px",
+                width:
+                  props.logoImage.aspectRatio > 0
+                    ? `${50 * props.logoImage.aspectRatio}px`
+                    : "50px",
+                color: getThemeColorCssValue(navigationColor),
+              }}
+            >
+              {pt("logo", "Logo")}
+            </div>
+          )
         ) : (
           <div style={logoWrapperStyle}>
             <Image
@@ -1151,7 +1179,7 @@ const BarSocialDiningHeaderSectionComponent: PuckComponent<
 
 export const BarSocialDiningHeaderSection: YextComponentConfig<BarSocialDiningHeaderSectionProps> =
   {
-    label: "Shared Header",
+    label: "Header",
     fields: BarSocialDiningHeaderSectionFields,
     defaultProps: {
       variant: "centerLogoSplitNav",
@@ -1288,7 +1316,7 @@ export const BarSocialDiningHeaderSection: YextComponentConfig<BarSocialDiningHe
 
 export const config: SectionConfig = {
   id: "BarSocialDiningHeaderSection",
-  displayName: "Shared Header",
-  description: "Shared Header",
+  displayName: "Header",
+  description: "Header",
   pageSetTypes: ["ENTITY", "DIRECTORY", "LOCATOR"],
 };

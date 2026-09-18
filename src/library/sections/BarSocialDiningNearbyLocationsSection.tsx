@@ -7,11 +7,13 @@ import {
   getDirections,
 } from "@yext/pages-components";
 import {
+  msg,
   Background,
   EntityField,
   getAnalyticsScopeHash,
   getSurfaceColorStyle,
   mergeMeta,
+  pt,
   resolveComponentData,
   resolveUrlTemplate,
   useDocument,
@@ -63,65 +65,67 @@ type BarSocialDiningNearbyLocationsSectionProps = {
 };
 
 const nearbyLocationsScopeClass = "bar-social-dining-nearby-locations";
-const nearbyLocationsScopedTypographyCss = getScopedTypographyCss(nearbyLocationsScopeClass);
+const nearbyLocationsScopedTypographyCss = getScopedTypographyCss(
+  nearbyLocationsScopeClass,
+);
 
 const BarSocialDiningNearbyLocationsSectionFields: YextFields<BarSocialDiningNearbyLocationsSectionProps> =
   {
     section: {
-      label: "Section",
+      label: msg("fields.section", "Section"),
       type: "object",
       objectFields: {
         backgroundColor: {
-          label: "Background Color",
+          label: msg("fields.backgroundColor", "Background Color"),
           type: "basicSelector",
           options: "BACKGROUND_COLOR",
         },
         visibleOnLivePage: {
-          label: "Visible on Live Page",
+          label: msg("fields.visibleOnLivePage", "Visible on Live Page"),
           type: "radio",
           options: [
-            { label: "Yes", value: true },
-            { label: "No", value: false },
+            { label: msg("fields.options.yes", "Yes"), value: true },
+            { label: msg("fields.options.no", "No"), value: false },
           ],
         },
       },
     },
     heading: {
-      label: "Heading",
+      label: msg("fields.heading", "Heading"),
       type: "object",
       objectFields: {
         text: {
           type: "entityField",
-          label: "Text",
+          label: msg("fields.text", "Text"),
           filter: {
             types: ["type.string"],
           },
         },
         styles: {
-          label: "Text Styles",
+          label: msg("fields.textStyles", "Text Styles"),
           type: "styledText",
         },
         fontColor: {
-          label: "Font Color",
+          label: msg("fields.fontColor", "Font Color"),
           type: "basicSelector",
           options: "SITE_COLOR",
         },
       },
     },
     radius: {
-      label: "Radius",
+      label: msg("fields.radius", "Radius"),
       type: "number",
       min: 1,
       max: 50,
     },
     limit: {
-      label: "Limit",
+      label: msg("fields.limit", "Limit"),
       type: "number",
       min: 1,
       max: 12,
     },
     cardBackgroundColor: {
-      label: "Card Background Color",
+      label: msg("fields.cardBackgroundColor", "Card Background Color"),
       type: "basicSelector",
       options: "BACKGROUND_COLOR",
     },
@@ -188,9 +192,9 @@ const BarSocialDiningNearbyLocationsSectionComponent: PuckComponent<
         name={`BarSocialDiningNearbyLocationsSection${getAnalyticsScopeHash(id)}`}
       >
         <style>{nearbyLocationsScopedTypographyCss}</style>
-      <Background
-        as="section"
-        background={props.section.backgroundColor}
+        <Background
+          as="section"
+          background={props.section.backgroundColor}
           className={nearbyLocationsScopeClass}
           style={{
             ...getSurfaceColorStyle(
@@ -239,12 +243,15 @@ const BarSocialDiningNearbyLocationsSectionComponent: PuckComponent<
             </div>
             {nearbyLocationsStatus === "pending" ? (
               <p style={{ color: sectionForeground }}>
-                Loading nearby locations
+                {pt("loadingNearbyLocations", "Loading nearby locations...")}
               </p>
             ) : nearbyLocationsStatus !== "success" ||
               !nearbyLocationDocs.length ? (
               <p style={{ color: sectionForeground }}>
-                No nearby locations found for this location
+                {pt(
+                  "noResultsFoundForThisArea",
+                  "No results found for this area",
+                )}
               </p>
             ) : (
               <div
@@ -301,7 +308,10 @@ const BarSocialDiningNearbyLocationsSectionComponent: PuckComponent<
                       </p>
                       {locationData.mainPhone ? (
                         <p style={{ margin: "0 0 24px" }}>
-                          {formatPhoneNumber(locationData.mainPhone, "domestic")}
+                          {formatPhoneNumber(
+                            locationData.mainPhone,
+                            "domestic",
+                          )}
                         </p>
                       ) : null}
                       <div className="bar-social-dining-link-typography">
@@ -321,7 +331,7 @@ const BarSocialDiningNearbyLocationsSectionComponent: PuckComponent<
               </div>
             )}
           </div>
-      </Background>
+        </Background>
       </AnalyticsScopeProvider>
     </VisibilityWrapper>
   );

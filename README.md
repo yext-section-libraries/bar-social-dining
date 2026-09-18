@@ -1,4 +1,4 @@
-# Pages Section Library Starter
+# Bar and Social Dining Section Library
 
 This branch supports a Section Library with at lease one Entity layout, one Directory
 layout, and one Locator layout. A Section Library is the source that users fork
@@ -153,7 +153,6 @@ example data from the account's Knowledge Graph.
 
 ```ts
 yextVisualEditorPlugin({
-  sectionLibrary: true,
   localEditor: { enabled: true },
 });
 ```

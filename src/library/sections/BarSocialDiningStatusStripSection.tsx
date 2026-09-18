@@ -2,7 +2,9 @@ import type { SectionConfig } from "@yext/visual-editor";
 
 import type { PuckComponent } from "@puckeditor/core";
 import { HoursStatus } from "@yext/pages-components";
+import { useTranslation } from "react-i18next";
 import {
+  msg,
   Background,
   EntityField,
   getSurfaceColorStyle,
@@ -46,6 +48,7 @@ type BarSocialDiningStatusStripSectionProps = {
  */
 const renderStatusLabel = (
   params: StatusParams,
+  t: ReturnType<typeof useTranslation>["t"],
   locale: string,
   timeFormat: "12h" | "24h",
   dayOfWeekFormat: "short" | "long",
@@ -58,13 +61,16 @@ const renderStatusLabel = (
       : { hour: "numeric", minute: "2-digit", hour12: true };
 
   if (params.comingSoon) {
-    return showCurrentStatus ? "Coming soon" : "";
+    return showCurrentStatus ? t("statusComingSoon", "Coming soon") : "";
   }
 
   if (params.isOpen && params.currentInterval) {
-    return `${showCurrentStatus ? "Open until " : ""}${params.currentInterval
+    const endTime = params.currentInterval
       .getEndTime(locale, timeOptions)
-      .toLowerCase()}`;
+      .toLowerCase();
+    return showCurrentStatus
+      ? t("openUntilTime", "Open until {{time}}", { time: endTime })
+      : endTime;
   }
 
   if (params.futureInterval) {
@@ -74,94 +80,112 @@ const renderStatusLabel = (
         })}`
       : "";
 
-    return `${showCurrentStatus ? "Closed until " : "Until "}${params.futureInterval
+    const startTime = params.futureInterval
       .getStartTime(locale, timeOptions)
-      .toLowerCase()}${formattedDay}`;
+      .toLowerCase();
+
+    return showCurrentStatus
+      ? t("closedUntilTime", "Closed until {{time}}{{day}}", {
+          time: startTime,
+          day: formattedDay,
+        })
+      : t("untilTime", "Until {{time}}{{day}}", {
+          time: startTime,
+          day: formattedDay,
+        });
   }
 
-  return showCurrentStatus ? "Closed today" : "";
+  return showCurrentStatus ? t("closedToday", "Closed today") : "";
 };
 
 const statusStripScopeClass = "bar-social-dining-status-strip";
-const statusStripScopedTypographyCss = getScopedTypographyCss(statusStripScopeClass);
+const statusStripScopedTypographyCss = getScopedTypographyCss(
+  statusStripScopeClass,
+);
 
 const BarSocialDiningStatusStripSectionFields: YextFields<BarSocialDiningStatusStripSectionProps> =
   {
     section: {
-      label: "Section",
+      label: msg("fields.section", "Section"),
       type: "object",
       objectFields: {
         backgroundColor: {
-          label: "Background Color",
+          label: msg("fields.backgroundColor", "Background Color"),
           type: "basicSelector",
           options: "BACKGROUND_COLOR",
         },
         visibleOnLivePage: {
-          label: "Visible on Live Page",
+          label: msg("fields.visibleOnLivePage", "Visible on Live Page"),
           type: "radio",
           options: [
-            { label: "Yes", value: true },
-            { label: "No", value: false },
+            { label: msg("fields.options.yes", "Yes"), value: true },
+            { label: msg("fields.options.no", "No"), value: false },
           ],
         },
       },
     },
     hours: {
       type: "entityField",
-      label: "Hours",
+      label: msg("fields.hours", "Hours"),
       filter: {
         types: ["type.hours"],
       },
       disableConstantValueToggle: true,
     },
     hoursStyles: {
-      label: "Hours Styles",
+      label: msg("fields.hoursStyles", "Hours Styles"),
       type: "object",
       objectFields: {
         showCurrentStatus: {
-          label: "Show Current Status",
+          label: msg("fields.showCurrentStatus", "Show Current Status"),
           type: "radio",
           options: [
-            { label: "Yes", value: true },
-            { label: "No", value: false },
+            { label: msg("fields.options.yes", "Yes"), value: true },
+            { label: msg("fields.options.no", "No"), value: false },
           ],
         },
         timeFormat: {
-          label: "Time Format",
+          label: msg("fields.timeFormat", "Time Format"),
           type: "select",
           options: [
-            { label: "12 Hour", value: "12h" },
-            { label: "24 Hour", value: "24h" },
+            {
+              label: msg("fields.options.hour12Label", "12 Hour"),
+              value: "12h",
+            },
+            {
+              label: msg("fields.options.hour24Label", "24 Hour"),
+              value: "24h",
+            },
           ],
         },
         dayOfWeekFormat: {
-          label: "Day Of Week Format",
+          label: msg("fields.dayOfWeekFormatLabel", "Day Of Week Format"),
           type: "select",
           options: [
-            { label: "Short", value: "short" },
-            { label: "Long", value: "long" },
+            { label: msg("fields.options.short", "Short"), value: "short" },
+            { label: msg("fields.options.long", "Long"), value: "long" },
           ],
         },
         showDayNames: {
-          label: "Show Day Names",
+          label: msg("fields.showDayNames", "Show Day Names"),
           type: "radio",
           options: [
-            { label: "Yes", value: true },
-            { label: "No", value: false },
+            { label: msg("fields.options.yes", "Yes"), value: true },
+            { label: msg("fields.options.no", "No"), value: false },
           ],
         },
       },
     },
     statusText: {
-      label: "Status Text",
+      label: msg("fields.statusText", "Status Text"),
       type: "object",
       objectFields: {
         styles: {
-          label: "Text Styles",
+          label: msg("fields.textStyles", "Text Styles"),
           type: "styledText",
         },
         fontColor: {
-          label: "Font Color",
+          label: msg("fields.fontColor", "Font Color"),
           type: "basicSelector",
           options: "SITE_COLOR",
         },
@@ -172,6 +196,7 @@ const BarSocialDiningStatusStripSectionFields: YextFields<BarSocialDiningStatusS
 const BarSocialDiningStatusStripSectionComponent: PuckComponent<
   BarSocialDiningStatusStripSectionProps
 > = (props) => {
+  const { t } = useTranslation();
   const streamDocument = useDocument<{
     locale?: string;
     timezone?: string;
@@ -240,6 +265,7 @@ const BarSocialDiningStatusStripSectionComponent: PuckComponent<
                 >
                   {renderStatusLabel(
                     params,
+                    t,
                     locale,
                     props.hoursStyles.timeFormat,
                     props.hoursStyles.dayOfWeekFormat,
@@ -249,19 +275,6 @@ const BarSocialDiningStatusStripSectionComponent: PuckComponent<
                 </h2>
               )}
             />
-          ) : props.puck.isEditing ? (
-            <h2
-              style={{
-                margin: 0,
-                ...textStyle(
-                  props.statusText.styles,
-                  props.statusText.fontColor,
-                  props.section.backgroundColor,
-                ),
-              }}
-            >
-              Open until 9pm
-            </h2>
           ) : null}
         </EntityField>
       </Background>
