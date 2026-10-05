@@ -1,7 +1,9 @@
+import "../shared/typography.css";
 import type { SectionConfig } from "@yext/visual-editor";
 
 import type { PuckComponent } from "@puckeditor/core";
 import * as React from "react";
+import { TranslatedHoursTable as HoursTableComponent } from "../shared/components/TranslatedHoursTable";
 import { Link } from "@yext/pages-components";
 import {
   msg,
@@ -27,13 +29,10 @@ import type {
   AddressType,
   DayOfWeekNames,
   HoursType,
-  IntervalType,
-  WeekType,
 } from "@yext/pages-components";
 import { formatPhoneNumber } from "@yext/visual-editor/section-library-support";
 import { createCta } from "../shared/createCta";
 import {
-  getScopedTypographyCss,
   getTextStyle,
   resolveTextColor,
 } from "../shared/sectionStyles";
@@ -108,27 +107,6 @@ const paragraphTextStyle = (
 });
 
 const detailsScopeClass = "bar-social-dining-details";
-const detailsScopedTypographyCss = getScopedTypographyCss(detailsScopeClass);
-
-const orderedWeekDays: (keyof WeekType)[] = [
-  "monday",
-  "tuesday",
-  "wednesday",
-  "thursday",
-  "friday",
-  "saturday",
-  "sunday",
-];
-
-const dayLabels: Record<keyof WeekType, string> = {
-  monday: "Monday",
-  tuesday: "Tuesday",
-  wednesday: "Wednesday",
-  thursday: "Thursday",
-  friday: "Friday",
-  saturday: "Saturday",
-  sunday: "Sunday",
-};
 
 const formatAddressLines = (
   address: AddressType,
@@ -156,106 +134,6 @@ const formatAddressLines = (
       : countryCode;
 
   return [line1, line2, cityRegionPostalLine, countryLine].filter(Boolean);
-};
-
-const formatHoursTime = (value: string, locale: string): string => {
-  const [hourString, minuteString] = value.split(":");
-  const hour = Number(hourString);
-  const minute = Number(minuteString);
-
-  if (Number.isNaN(hour) || Number.isNaN(minute)) {
-    return value;
-  }
-
-  return new Intl.DateTimeFormat(locale, {
-    hour: "numeric",
-    minute: "2-digit",
-    timeZone: "UTC",
-  }).format(new Date(Date.UTC(2000, 0, 1, hour, minute)));
-};
-
-const formatHoursIntervals = (
-  intervals: IntervalType[] | undefined,
-  locale: string,
-  t: ReturnType<typeof useTranslation>["t"],
-): string => {
-  if (!intervals?.length) {
-    return "Closed";
-  }
-
-  if (
-    intervals.length === 1 &&
-    intervals[0]?.start === "00:00" &&
-    (intervals[0]?.end === "23:59" || intervals[0]?.end === "24:00")
-  ) {
-    return t("open24Hours", "Open 24 Hours");
-  }
-
-  return intervals
-    .map((interval) => {
-      return `${formatHoursTime(interval.start, locale)} - ${formatHoursTime(
-        interval.end,
-        locale,
-      )}`;
-    })
-    .join(", ");
-};
-
-const buildHoursRows = (
-  hours: HoursType,
-  locale: string,
-  startOfWeek: keyof DayOfWeekNames | "today",
-  collapseDays: boolean,
-  t: ReturnType<typeof useTranslation>["t"],
-): { dayLabel: string; intervalsLabel: string }[] => {
-  const startIndex =
-    startOfWeek === "today"
-      ? (() => {
-          const today = new Date().getDay();
-          return today === 0 ? 6 : today - 1;
-        })()
-      : Math.max(orderedWeekDays.indexOf(startOfWeek), 0);
-  const orderedDays = [
-    ...orderedWeekDays.slice(startIndex),
-    ...orderedWeekDays.slice(0, startIndex),
-  ];
-  const rows = orderedDays.map((dayKey) => {
-    const day = hours[dayKey];
-    const intervalsLabel = day?.isClosed
-      ? "Closed"
-      : formatHoursIntervals(day?.openIntervals, locale, t);
-
-    return {
-      dayKey,
-      dayLabel: dayLabels[dayKey],
-      intervalsLabel,
-    };
-  });
-
-  if (!collapseDays || rows.length === 0) {
-    return rows.map(({ dayLabel, intervalsLabel }) => ({
-      dayLabel,
-      intervalsLabel,
-    }));
-  }
-
-  return rows.reduce<{ dayLabel: string; intervalsLabel: string }[]>(
-    (collapsedRows, row) => {
-      const previousRow = collapsedRows[collapsedRows.length - 1];
-
-      if (!previousRow || previousRow.intervalsLabel !== row.intervalsLabel) {
-        collapsedRows.push({
-          dayLabel: row.dayLabel,
-          intervalsLabel: row.intervalsLabel,
-        });
-        return collapsedRows;
-      }
-
-      previousRow.dayLabel = `${previousRow.dayLabel} - ${row.dayLabel}`;
-      return collapsedRows;
-    },
-    [],
-  );
 };
 
 const normalizeTextList = (value: unknown): string[] => {
@@ -553,8 +431,8 @@ const BarSocialDiningDetailsSectionComponent: PuckComponent<
     comingSoon?: boolean;
     additionalHoursText?: string;
   }>();
-  const { t } = useTranslation();
-  const locale = streamDocument.locale ?? "en";
+  const { t , i18n} = useTranslation();
+  const locale = i18n.language;
   const sectionForeground = resolveTextColor(
     undefined,
     props.section.backgroundColor,
@@ -604,15 +482,6 @@ const BarSocialDiningDetailsSectionComponent: PuckComponent<
         props.showCountry,
       )
     : [];
-  const resolvedHoursRows = resolvedHours
-    ? buildHoursRows(
-        resolvedHours,
-        locale,
-        props.hoursStyles.startOfWeek,
-        props.hoursStyles.collapseDays,
-        t,
-      )
-    : [];
   const hasOfferings = resolvedOfferings.length > 0;
   const additionalHoursText =
     typeof streamDocument.additionalHoursText === "string"
@@ -659,7 +528,6 @@ const BarSocialDiningDetailsSectionComponent: PuckComponent<
       <AnalyticsScopeProvider
         name={`BarSocialDiningDetailsSection${getAnalyticsScopeHash(id)}`}
       >
-        <style>{detailsScopedTypographyCss}</style>
         <Background
           as="section"
           background={props.section.backgroundColor}
@@ -871,7 +739,7 @@ const BarSocialDiningDetailsSectionComponent: PuckComponent<
                       : ""}
                   </h3>
                 </EntityField>
-                {resolvedHours ? (
+                {resolvedHours || streamDocument.comingSoon ? (
                   <EntityField
                     displayName="Hours"
                     fieldId={props.hours.field}
@@ -902,20 +770,18 @@ const BarSocialDiningDetailsSectionComponent: PuckComponent<
                               : "left",
                       }}
                     >
-                      {streamDocument.comingSoon ? (
-                        <p style={{ color: "inherit", margin: 0 }}>
-                          {t("comingSoon", "Coming Soon")}
-                        </p>
-                      ) : (
-                        resolvedHoursRows.map((row) => (
-                          <p
-                            key={`${row.dayLabel}-${row.intervalsLabel}`}
-                            style={{ color: "inherit", margin: 0 }}
-                          >
-                            {`${row.dayLabel}: ${row.intervalsLabel}`}
-                          </p>
-                        ))
-                      )}
+                      <HoursTableComponent
+                        hours={resolvedHours ?? {}}
+                        comingSoon={!!streamDocument.comingSoon}
+                        startOfWeek={props.hoursStyles.startOfWeek}
+                        collapseDays={props.hoursStyles.collapseDays}
+                        intervalTranslations={{
+                          isClosed: t("closed", "Closed"),
+                          open24Hours: t("open24Hours", "Open 24 Hours"),
+                          reopenDate: t("reopenDate", "Reopen Date"),
+                          timeFormatLocale: locale,
+                        }}
+                      />
                       {props.hoursStyles.showAdditionalHoursText &&
                       additionalHoursText ? (
                         <p style={{ color: "inherit", margin: "12px 0 0" }}>

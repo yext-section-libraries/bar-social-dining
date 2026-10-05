@@ -1,3 +1,4 @@
+import "../shared/typography.css";
 import type { SectionConfig } from "@yext/visual-editor";
 
 import type { PuckComponent } from "@puckeditor/core";
@@ -37,9 +38,10 @@ import type {
   ListingType,
 } from "@yext/pages-components";
 import {
-  getScopedTypographyCss,
+  getTextStyle,
   resolveTextColor,
 } from "../shared/sectionStyles";
+import { useTranslation } from "react-i18next";
 
 type NearbyLocationShape = NearbyLocationDoc & {
   address?: AddressType;
@@ -65,9 +67,6 @@ type BarSocialDiningNearbyLocationsSectionProps = {
 };
 
 const nearbyLocationsScopeClass = "bar-social-dining-nearby-locations";
-const nearbyLocationsScopedTypographyCss = getScopedTypographyCss(
-  nearbyLocationsScopeClass,
-);
 
 const BarSocialDiningNearbyLocationsSectionFields: YextFields<BarSocialDiningNearbyLocationsSectionProps> =
   {
@@ -140,7 +139,8 @@ const BarSocialDiningNearbyLocationsSectionComponent: PuckComponent<
   const { relativePrefixToRoot } = useTemplateProps<{
     relativePrefixToRoot?: string;
   }>();
-  const locale = streamDocument.locale ?? "en";
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
   const coordinate = streamDocument.yextDisplayCoordinate;
   const resolvedHeading = resolveComponentData(
     props.heading.text,
@@ -191,7 +191,6 @@ const BarSocialDiningNearbyLocationsSectionComponent: PuckComponent<
       <AnalyticsScopeProvider
         name={`BarSocialDiningNearbyLocationsSection${getAnalyticsScopeHash(id)}`}
       >
-        <style>{nearbyLocationsScopedTypographyCss}</style>
         <Background
           as="section"
           background={props.section.backgroundColor}
@@ -218,23 +217,12 @@ const BarSocialDiningNearbyLocationsSectionComponent: PuckComponent<
               >
                 <h2
                   style={{
-                    color: resolveTextColor(
+                    ...getTextStyle(
+                      props.heading.styles,
                       props.heading.fontColor,
                       props.section.backgroundColor,
                     ),
-                    fontStyle:
-                      props.heading.styles.fontStyle === "default"
-                        ? undefined
-                        : props.heading.styles.fontStyle,
-                    fontWeight:
-                      props.heading.styles.fontWeight === "default"
-                        ? undefined
-                        : props.heading.styles.fontWeight,
                     margin: 0,
-                    textTransform:
-                      props.heading.styles.textTransform === "default"
-                        ? undefined
-                        : props.heading.styles.textTransform,
                   }}
                 >
                   {typeof resolvedHeading === "string" ? resolvedHeading : ""}

@@ -9,6 +9,7 @@ import {
   type StyledTextValue,
   type ThemeColor,
 } from "@yext/visual-editor";
+import "./typography.css";
 
 export const hasExplicitThemeColor = (
   color?: ThemeColor,
@@ -40,29 +41,101 @@ export const resolveTextColor = (
   return getThemeColorCssValue(color.selectedColor);
 };
 
+export const resolveTextStyles = (
+  styles?: MaybeRTFProps["richTextStyleOverrides"],
+) => ({
+  fontFamily: styles?.fontFamily === "default" ? undefined : styles?.fontFamily,
+  fontSize: styles?.fontSize === "default" ? undefined : styles?.fontSize,
+  fontWeight: styles?.fontWeight === "default" ? undefined : styles?.fontWeight,
+  fontStyle: styles?.fontStyle === "default" ? undefined : styles?.fontStyle,
+  textTransform:
+    styles?.textTransform === "default" ? undefined : styles?.textTransform,
+});
+
+// These inherited properties survive nested platform .components token resets.
+export const resolveBodyStyles = (
+  styles?: MaybeRTFProps["richTextStyleOverrides"],
+): React.CSSProperties => {
+  const resolved = resolveTextStyles(styles);
+  const variables = Object.fromEntries(
+    Object.entries(resolved)
+      .filter(([, value]) => value !== undefined)
+      .map(([property, value]) => [`--bar-social-dining-body-${property}`, value]),
+  );
+  return { ...resolved, ...variables };
+};
+
 export const getTextStyle = (
-  styles: StyledTextValue,
+  styles?: Partial<StyledTextValue>,
   fontColor?: ThemeColor,
   surfaceColor?: ThemeColor,
   streamDocument?: StreamDocument | Record<string, unknown>,
 ): React.CSSProperties => ({
+  ...resolveBodyStyles(styles),
   color: surfaceColor
     ? resolveTextColor(fontColor, surfaceColor, streamDocument)
     : undefined,
-  fontFamily: styles.fontFamily === "default" ? undefined : styles.fontFamily,
-  fontSize: styles.fontSize === "default" ? undefined : styles.fontSize,
-  fontStyle: styles.fontStyle === "default" ? undefined : styles.fontStyle,
-  fontWeight: styles.fontWeight === "default" ? undefined : styles.fontWeight,
-  textTransform:
-    styles.textTransform === "default" ? undefined : styles.textTransform,
 });
+
+const richTextStyle = (
+  styles?: MaybeRTFProps["richTextStyleOverrides"],
+): React.CSSProperties => {
+  const bodyVariables = Object.fromEntries(
+    Object.entries(resolveTextStyles(styles))
+      .filter(([, value]) => value !== undefined)
+      .map(([property, value]) => [`--${property}-body-${property}`, value]),
+  );
+  return { ...resolveBodyStyles(styles), ...bodyVariables };
+};
+
+// Resolved rich text wraps MaybeRTF in another rtf-theme element. Forward field
+// overrides to the renderer and inner wrapper, keeping heading and link roles.
+export const applyRichTextOverrides = (
+  content: React.ReactNode,
+  styles?: MaybeRTFProps["richTextStyleOverrides"],
+): React.ReactNode => {
+  if (Array.isArray(content)) {
+    return content.map((child) => applyRichTextOverrides(child, styles));
+  }
+  if (!React.isValidElement(content)) {
+    return content;
+  }
+  const element = content as React.ReactElement<
+    MaybeRTFProps & { children?: React.ReactNode }
+  >;
+  if (typeof element.type === "string" && /^(h[1-6]|a)$/.test(element.type)) {
+    return element;
+  }
+  if (element.type === React.Fragment) {
+    return React.cloneElement(
+      element,
+      {},
+      applyRichTextOverrides(element.props.children, styles),
+    );
+  }
+  return React.cloneElement(element, {
+    ...(element.type === MaybeRTF
+      ? {
+          richTextStyleOverrides: {
+            ...element.props.richTextStyleOverrides,
+            ...styles,
+            ...resolveTextStyles(styles),
+          },
+        }
+      : {}),
+    style: { ...element.props.style, ...richTextStyle(styles) },
+    ...(element.props.children !== undefined
+      ? { children: applyRichTextOverrides(element.props.children, styles) }
+      : {}),
+  });
+};
 
 export const renderRichText = (
   value: unknown,
   richTextStyleOverrides?: MaybeRTFProps["richTextStyleOverrides"],
 ): React.ReactNode => {
   if (React.isValidElement(value)) {
-    return value;
+    return applyRichTextOverrides(value, richTextStyleOverrides);
   }
 
   const data =
@@ -74,43 +147,11 @@ export const renderRichText = (
   return (
     <MaybeRTF
       data={data}
-      richTextStyleOverrides={richTextStyleOverrides}
+      richTextStyleOverrides={{
+        ...richTextStyleOverrides,
+        ...resolveTextStyles(richTextStyleOverrides),
+      }}
+      style={richTextStyle(richTextStyleOverrides)}
     />
   );
 };
-
-export const getScopedTypographyCss = (scopeClass: string): string => `
-  .${scopeClass} p,
-  .${scopeClass} li {
-    font-family: var(--fontFamily-body-fontFamily);
-    font-size: var(--fontSize-body-fontSize);
-    line-height: 1.5;
-    font-weight: var(--fontWeight-body-fontWeight);
-    font-style: var(--fontStyle-body-fontStyle);
-    text-transform: var(--textTransform-body-textTransform);
-  }
-
-  ${[1, 2, 3, 4, 5, 6]
-    .map(
-      (level) => `.${scopeClass} h${level} {
-    font-family: var(--fontFamily-h${level}-fontFamily);
-    font-size: var(--fontSize-h${level}-fontSize);
-    line-height: 1.2;
-    font-weight: var(--fontWeight-h${level}-fontWeight);
-    font-style: var(--fontStyle-h${level}-fontStyle);
-    text-transform: var(--textTransform-h${level}-textTransform);
-  }`,
-    )
-    .join("\n\n  ")}
-
-  .${scopeClass} .bar-social-dining-link-typography a {
-    font-family: var(--fontFamily-link-fontFamily);
-    font-size: var(--fontSize-link-fontSize);
-    font-weight: var(--fontWeight-link-fontWeight);
-    font-style: var(--fontStyle-link-fontStyle);
-    line-height: 1.5;
-    text-decoration: underline;
-    text-transform: var(--textTransform-link-textTransform);
-    letter-spacing: var(--letterSpacing-link-letterSpacing);
-  }
-`;

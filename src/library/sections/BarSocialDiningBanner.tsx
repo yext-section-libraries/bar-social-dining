@@ -1,6 +1,6 @@
+import "../shared/typography.css";
 import type { SectionConfig } from "@yext/visual-editor";
 
-import { isValidElement } from "react";
 import { PuckComponent } from "@puckeditor/core";
 import { CircleSlash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -8,7 +8,6 @@ import {
   msg,
   Body,
   EntityField,
-  MaybeRTF,
   PageSection,
   type StyledTextValue,
   type ThemeColor,
@@ -25,6 +24,8 @@ import {
   toPuckFields,
   useDocument,
 } from "@yext/visual-editor";
+
+import { renderRichText } from "../shared/sectionStyles";
 
 type BarSocialDiningBannerProps = {
   data: {
@@ -117,12 +118,9 @@ const BarSocialDiningBannerFields: YextFields<BarSocialDiningBannerProps> = {
   },
 };
 
-const BarSocialDiningBannerComponent: PuckComponent<BarSocialDiningBannerProps> = ({
-  data,
-  styles,
-  section,
-  puck,
-}) => {
+const BarSocialDiningBannerComponent: PuckComponent<
+  BarSocialDiningBannerProps
+> = ({ data, styles, section, puck }) => {
   const { i18n } = useTranslation();
   const streamDocument = useDocument();
   const isMappedField =
@@ -148,10 +146,10 @@ const BarSocialDiningBannerComponent: PuckComponent<BarSocialDiningBannerProps> 
         <div className="relative flex h-20 w-full flex-row items-center justify-center gap-3 rounded-lg border border-gray-200 bg-gray-100 px-4">
           <CircleSlash2 className="h-10 w-10 flex-shrink-0 text-gray-400" />
           <div className="flex flex-col items-start">
-            <Body className="font-medium text-gray-500" variant="sm">
+            <Body className="text-gray-500" variant="sm">
               Section hidden for this page
             </Body>
-            <Body className="font-normal text-gray-500" variant="sm">
+            <Body className="text-gray-500" variant="sm">
               The mapped banner field is empty
             </Body>
           </div>
@@ -192,14 +190,7 @@ const BarSocialDiningBannerComponent: PuckComponent<BarSocialDiningBannerProps> 
         displayName="Banner Text"
         fieldId={data.text.field}
       >
-        {isValidElement(resolvedText) ? (
-          resolvedText
-        ) : typeof resolvedText === "string" ? (
-          <MaybeRTF
-            data={resolvedText}
-            richTextStyleOverrides={richTextStyleOverrides}
-          />
-        ) : null}
+        {renderRichText(resolvedText, richTextStyleOverrides)}
       </EntityField>
     </PageSection>
   );
@@ -208,47 +199,50 @@ const BarSocialDiningBannerComponent: PuckComponent<BarSocialDiningBannerProps> 
 /**
  * Displays a full-width, editor-configurable rich-text banner.
  */
-export const BarSocialDiningBanner: YextComponentConfig<BarSocialDiningBannerProps> = {
-  label: "Banner",
-  fields: toPuckFields<BarSocialDiningBannerProps>(BarSocialDiningBannerFields),
-  defaultProps: {
-    data: {
-      text: {
-        field: "",
-        constantValue: {
-          defaultValue: getDefaultRTF("Banner Text"),
+export const BarSocialDiningBanner: YextComponentConfig<BarSocialDiningBannerProps> =
+  {
+    label: "Banner Section",
+    fields: toPuckFields<BarSocialDiningBannerProps>(
+      BarSocialDiningBannerFields,
+    ),
+    defaultProps: {
+      data: {
+        text: {
+          field: "",
+          constantValue: {
+            defaultValue: getDefaultRTF("Banner Text"),
+          },
+          constantValueEnabled: true,
         },
-        constantValueEnabled: true,
+        styles: {
+          fontFamily: "default",
+          fontSize: "default",
+          fontWeight: "default",
+          fontStyle: "default",
+          textTransform: "default",
+        },
       },
       styles: {
-        fontFamily: "default",
-        fontSize: "default",
-        fontWeight: "default",
-        fontStyle: "default",
-        textTransform: "default",
+        textAlignment: "center",
+      },
+      section: {
+        backgroundColor: backgroundColors.color1.value,
+        visibleOnLivePage: true,
       },
     },
-    styles: {
-      textAlignment: "center",
-    },
-    section: {
-      backgroundColor: backgroundColors.color1.value,
-      visibleOnLivePage: true,
-    },
-  },
-  render: (props) => (
-    <VisibilityWrapper
-      isEditing={props.puck.isEditing}
-      liveVisibility={props.section.visibleOnLivePage}
-    >
-      <BarSocialDiningBannerComponent {...props} />
-    </VisibilityWrapper>
-  ),
-};
+    render: (props) => (
+      <VisibilityWrapper
+        isEditing={props.puck.isEditing}
+        liveVisibility={props.section.visibleOnLivePage}
+      >
+        <BarSocialDiningBannerComponent {...props} />
+      </VisibilityWrapper>
+    ),
+  };
 
 export const config: SectionConfig = {
   id: "BarSocialDiningBanner",
-  displayName: "Banner",
+  displayName: "Banner Section",
   description: "Banner",
-  pageSetTypes: ["ENTITY"],
+  pageSetTypes: ["ENTITY", "DIRECTORY", "LOCATOR"],
 };

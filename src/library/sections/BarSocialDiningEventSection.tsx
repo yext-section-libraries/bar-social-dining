@@ -1,3 +1,4 @@
+import "../shared/typography.css";
 import type { SectionConfig } from "@yext/visual-editor";
 
 import type { PuckComponent } from "@puckeditor/core";
@@ -30,11 +31,11 @@ import {
 } from "@yext/visual-editor";
 import { aspectRatioOptions } from "../shared/fieldOptions";
 import {
-  getScopedTypographyCss,
   getTextStyle as textStyle,
   renderRichText,
   resolveTextColor,
 } from "../shared/sectionStyles";
+import { useTranslation } from "react-i18next";
 
 type StyledTextProps = {
   text: YextEntityField<TranslatableString>;
@@ -68,7 +69,6 @@ type BarSocialDiningEventSectionProps = {
 };
 
 const eventScopeClass = "bar-social-dining-event";
-const eventScopedTypographyCss = getScopedTypographyCss(eventScopeClass);
 
 const BarSocialDiningEventSectionFields: YextFields<BarSocialDiningEventSectionProps> =
   {
@@ -105,7 +105,10 @@ const BarSocialDiningEventSectionFields: YextFields<BarSocialDiningEventSectionP
           label: msg("fields.text", "Text"),
           filter: { types: ["type.string"] },
         },
-        styles: { label: msg("fields.textStyles", "Text Styles"), type: "styledText" },
+        styles: {
+          label: msg("fields.textStyles", "Text Styles"),
+          type: "styledText",
+        },
         fontColor: {
           label: msg("fields.fontColor", "Font Color"),
           type: "basicSelector",
@@ -122,7 +125,10 @@ const BarSocialDiningEventSectionFields: YextFields<BarSocialDiningEventSectionP
           label: msg("fields.text", "Text"),
           filter: { types: ["type.rich_text_v2"] },
         },
-        styles: { label: msg("fields.textStyles", "Text Styles"), type: "styledText" },
+        styles: {
+          label: msg("fields.textStyles", "Text Styles"),
+          type: "styledText",
+        },
         fontColor: {
           label: msg("fields.fontColor", "Font Color"),
           type: "basicSelector",
@@ -168,7 +174,8 @@ const BarSocialDiningEventSectionComponent: PuckComponent<
   BarSocialDiningEventSectionProps
 > = ({ id, ...props }) => {
   const streamDocument = useDocument();
-  const locale = streamDocument.locale ?? "en";
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
   const resolvedHeading = resolveComponentData(
     props.heading.text,
     locale,
@@ -214,7 +221,6 @@ const BarSocialDiningEventSectionComponent: PuckComponent<
         name={`BarSocialDiningEventSection${getAnalyticsScopeHash(id)}`}
       >
         <style>{`
-          ${eventScopedTypographyCss}
 
           .bar-social-dining-event-layout {
             display: grid;
@@ -254,9 +260,9 @@ const BarSocialDiningEventSectionComponent: PuckComponent<
             word-break: break-word;
           }
         `}</style>
-      <Background
-        as="section"
-        background={props.section.backgroundColor}
+        <Background
+          as="section"
+          background={props.section.backgroundColor}
           className={eventScopeClass}
           style={{
             ...getSurfaceColorStyle(
@@ -277,9 +283,7 @@ const BarSocialDiningEventSectionComponent: PuckComponent<
             <div
               className="bar-social-dining-event-layout"
               style={{
-                backgroundColor:
-                  overlayColor ??
-                  "rgba(23, 18, 25, 0.18)",
+                backgroundColor: overlayColor ?? "rgba(23, 18, 25, 0.18)",
                 backgroundImage: hasBannerImage
                   ? `url("${resolvedImageUrl}")`
                   : undefined,
@@ -317,7 +321,9 @@ const BarSocialDiningEventSectionComponent: PuckComponent<
                   <EntityField
                     displayName="Heading"
                     fieldId={props.heading.text.field}
-                    constantValueEnabled={props.heading.text.constantValueEnabled}
+                    constantValueEnabled={
+                      props.heading.text.constantValueEnabled
+                    }
                   >
                     <h2
                       style={{
@@ -329,7 +335,9 @@ const BarSocialDiningEventSectionComponent: PuckComponent<
                         marginBottom: "12px",
                       }}
                     >
-                      {typeof resolvedHeading === "string" ? resolvedHeading : ""}
+                      {typeof resolvedHeading === "string"
+                        ? resolvedHeading
+                        : ""}
                     </h2>
                   </EntityField>
                   <EntityField
@@ -348,7 +356,7 @@ const BarSocialDiningEventSectionComponent: PuckComponent<
                         marginBottom: "16px",
                       }}
                     >
-                      {renderRichText(resolvedBody)}
+                      {renderRichText(resolvedBody, props.body.styles)}
                     </div>
                   </EntityField>
                   <EntityField
@@ -368,7 +376,7 @@ const BarSocialDiningEventSectionComponent: PuckComponent<
               </div>
             </div>
           </div>
-      </Background>
+        </Background>
       </AnalyticsScopeProvider>
     </VisibilityWrapper>
   );
@@ -415,7 +423,7 @@ export const BarSocialDiningEventSection: YextComponentConfig<BarSocialDiningEve
           field: "",
           constantValue: {
             defaultValue: {
-              html: '<p dir="ltr" style="font-size: 14.67px; font-weight: 400; line-height: 18.67px; margin: 0; padding: 3px 2px 3px 2px; position: relative;"><span>Planning a birthday dinner, team happy hour, or weekend gathering in [[geomodifier]] [[address.city]]? [[name]] offers group dining and private event options with elevated comfort food, craft cocktails, and a warm hospitality-first atmosphere.</span></p><ul><li><span>Private and semi-private dining</span></li><li><span>Curated burger and cocktail packages</span></li><li><span>Flexible group seating for up to 35 guests</span></li></ul>',
+              html: '<p dir="ltr" style="margin: 0; padding: 3px 2px 3px 2px; position: relative;"><span>Planning a birthday dinner, team happy hour, or weekend gathering in [[geomodifier]] [[address.city]]? [[name]] offers group dining and private event options with elevated comfort food, craft cocktails, and a warm hospitality-first atmosphere.</span></p><ul><li><span>Private and semi-private dining</span></li><li><span>Curated burger and cocktail packages</span></li><li><span>Flexible group seating for up to 35 guests</span></li></ul>',
               json: '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Planning a birthday dinner, team happy hour, or weekend gathering in [[geomodifier]] [[address.city]]? [[name]] offers group dining and private event options with elevated comfort food, craft cocktails, and a warm hospitality-first atmosphere.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1},{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Private and semi-private dining","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"listitem","value":1,"version":1},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Curated burger and cocktail packages","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"listitem","value":2,"version":1},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Flexible group seating for up to 35 guests","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"listitem","value":3,"version":1}],"direction":"ltr","format":"","indent":0,"listType":"bullet","start":1,"tag":"ul","type":"list","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}',
             } as RichText,
             hasLocalizedValue: "true",

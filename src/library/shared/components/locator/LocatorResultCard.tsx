@@ -21,7 +21,7 @@ import { PhoneAtom } from "@yext/visual-editor/section-library-support";
 import { useTemplateProps } from "@yext/visual-editor/section-library-support";
 import { resolveComponentData } from "@yext/visual-editor/section-library-support";
 import { HoursStatusAtom } from "@yext/visual-editor/section-library-support";
-import { HoursTableAtom } from "@yext/visual-editor/section-library-support";
+import { TranslatedHoursTable as HoursTableAtom } from "../TranslatedHoursTable";
 import { type BasicSelectorField } from "@yext/visual-editor/section-library-support";
 import type {
   YextCustomFieldRenderProps,

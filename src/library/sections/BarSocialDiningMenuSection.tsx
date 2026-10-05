@@ -1,3 +1,4 @@
+import "../shared/typography.css";
 import type { SectionConfig } from "@yext/visual-editor";
 
 import type { PuckComponent } from "@puckeditor/core";
@@ -31,11 +32,11 @@ import { createCta } from "../shared/createCta";
 import { aspectRatioOptions } from "../shared/fieldOptions";
 import {
   getReadableForegroundColor,
-  getScopedTypographyCss,
   getTextStyle as textStyle,
   hasExplicitThemeColor,
   renderRichText,
 } from "../shared/sectionStyles";
+import { useTranslation } from "react-i18next";
 
 type StyledTextProps = {
   text: YextEntityField<TranslatableString>;
@@ -227,7 +228,6 @@ type BarSocialDiningMenuSectionProps = {
 };
 
 const menuScopeClass = "bar-social-dining-menu";
-const menuScopedTypographyCss = getScopedTypographyCss(menuScopeClass);
 
 const BarSocialDiningMenuSectionFields =
   toPuckFields<BarSocialDiningMenuSectionProps>({
@@ -368,7 +368,8 @@ const BarSocialDiningMenuSectionComponent: PuckComponent<
   BarSocialDiningMenuSectionProps
 > = ({ id, ...props }) => {
   const streamDocument = useDocument();
-  const locale = streamDocument.locale ?? "en";
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
   const resolvedHeading = resolveComponentData(
     props.heading.text,
     locale,
@@ -391,10 +392,9 @@ const BarSocialDiningMenuSectionComponent: PuckComponent<
       <AnalyticsScopeProvider
         name={`BarSocialDiningMenuSection${getAnalyticsScopeHash(id)}`}
       >
-        <style>{menuScopedTypographyCss}</style>
-      <Background
-        as="section"
-        background={props.section.backgroundColor}
+        <Background
+          as="section"
+          background={props.section.backgroundColor}
           className={menuScopeClass}
           style={{
             ...getSurfaceColorStyle(
@@ -496,7 +496,9 @@ const BarSocialDiningMenuSectionComponent: PuckComponent<
                       : 0.8;
                   const hasCardImage = Boolean(resolvedImageUrl);
                   const titleText =
-                    typeof resolvedTitle === "string" ? resolvedTitle.trim() : "";
+                    typeof resolvedTitle === "string"
+                      ? resolvedTitle.trim()
+                      : "";
                   const categoryText =
                     typeof resolvedCategory === "string"
                       ? resolvedCategory.trim()
@@ -506,7 +508,9 @@ const BarSocialDiningMenuSectionComponent: PuckComponent<
                       ? resolvedDescriptionText.trim()
                       : "";
                   const ctaLabel =
-                    item.cta && typeof item.cta === "object" && "label" in item.cta
+                    item.cta &&
+                    typeof item.cta === "object" &&
+                    "label" in item.cta
                       ? typeof item.cta.label === "string"
                         ? item.cta.label.trim()
                         : item.cta.label &&
@@ -678,7 +682,10 @@ const BarSocialDiningMenuSectionComponent: PuckComponent<
                           ) : null}
                           {ctaValue ? (
                             <div
-                              style={{ display: "flex", justifyContent: "center" }}
+                              style={{
+                                display: "flex",
+                                justifyContent: "center",
+                              }}
                             >
                               <ComprehensiveCTA
                                 value={ctaValue}
@@ -695,7 +702,7 @@ const BarSocialDiningMenuSectionComponent: PuckComponent<
               </div>
             </EntityField>
           </div>
-      </Background>
+        </Background>
       </AnalyticsScopeProvider>
     </VisibilityWrapper>
   );
