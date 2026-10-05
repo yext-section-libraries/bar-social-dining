@@ -1,3 +1,4 @@
+import "../shared/typography.css";
 import type { SectionConfig } from "@yext/visual-editor";
 
 import * as React from "react";
@@ -33,10 +34,10 @@ import { MdEmail } from "react-icons/md";
 import { createCta } from "../shared/createCta";
 import { aspectRatioOptions } from "../shared/fieldOptions";
 import {
-  getScopedTypographyCss,
   getTextStyle as textStyle,
   renderRichText,
 } from "../shared/sectionStyles";
+import { useTranslation } from "react-i18next";
 
 type StyledTextProps = {
   text: YextEntityField<TranslatableString>;
@@ -136,7 +137,6 @@ const renderSocialIcon = (index: number): React.ReactNode => {
 };
 
 const footerScopeClass = "bar-social-dining-footer";
-const footerScopedTypographyCss = getScopedTypographyCss(footerScopeClass);
 
 const createTextLinkCta = (
   label: string,
@@ -314,8 +314,14 @@ const BarSocialDiningFooterSectionFields: YextFields<BarSocialDiningFooterSectio
           label: msg("fields.phoneFormat", "Phone Format"),
           type: "radio",
           options: [
-            { label: msg("fields.options.domestic", "Domestic"), value: "domestic" },
-            { label: msg("fields.options.international", "International"), value: "international" },
+            {
+              label: msg("fields.options.domestic", "Domestic"),
+              value: "domestic",
+            },
+            {
+              label: msg("fields.options.international", "International"),
+              value: "international",
+            },
           ],
         },
         includeHyperlink: {
@@ -408,7 +414,8 @@ const BarSocialDiningFooterSectionComponent: PuckComponent<
   BarSocialDiningFooterSectionProps
 > = ({ id, ...props }) => {
   const streamDocument = useDocument<{ locale?: string }>();
-  const locale = streamDocument.locale ?? "en";
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
   const resolvedLogoImage = resolveComponentData(
     props.logoImage.image,
     locale,
@@ -506,7 +513,6 @@ const BarSocialDiningFooterSectionComponent: PuckComponent<
       <AnalyticsScopeProvider
         name={`BarSocialDiningFooterSection${getAnalyticsScopeHash(id)}`}
       >
-        <style>{footerScopedTypographyCss}</style>
         <style>{`
           @media (max-width: 1024px) and (min-width: 769px) {
             .bar-social-dining-footer-grid {
@@ -520,9 +526,9 @@ const BarSocialDiningFooterSectionComponent: PuckComponent<
             }
           }
         `}</style>
-      <Background
-        as="footer"
-        background={props.section.backgroundColor}
+        <Background
+          as="footer"
+          background={props.section.backgroundColor}
           className={footerScopeClass}
           style={{
             ...getSurfaceColorStyle(
@@ -674,7 +680,10 @@ const BarSocialDiningFooterSectionComponent: PuckComponent<
                     ),
                   }}
                 >
-                  {renderRichText(resolvedContactBody)}
+                  {renderRichText(
+                    resolvedContactBody,
+                    props.contactBody.styles,
+                  )}
                 </div>
               </EntityField>
               {resolvedPhoneItems.map((item, index) => (
@@ -817,11 +826,14 @@ const BarSocialDiningFooterSectionComponent: PuckComponent<
                   opacity: 0.75,
                 }}
               >
-                {renderRichText(resolvedCopyrightText)}
+                {renderRichText(
+                  resolvedCopyrightText,
+                  props.copyrightText.styles,
+                )}
               </div>
             </EntityField>
           </div>
-      </Background>
+        </Background>
       </AnalyticsScopeProvider>
     </VisibilityWrapper>
   );
@@ -829,7 +841,7 @@ const BarSocialDiningFooterSectionComponent: PuckComponent<
 
 export const BarSocialDiningFooterSection: YextComponentConfig<BarSocialDiningFooterSectionProps> =
   {
-    label: "Footer Section",
+    label: "Footer",
     fields: toPuckFields<BarSocialDiningFooterSectionProps>(
       BarSocialDiningFooterSectionFields,
     ),
@@ -1015,7 +1027,7 @@ export const BarSocialDiningFooterSection: YextComponentConfig<BarSocialDiningFo
 
 export const config: SectionConfig = {
   id: "BarSocialDiningFooterSection",
-  displayName: "Footer Section",
+  displayName: "Footer",
   description: "Footer Section",
   pageSetTypes: ["ENTITY", "DIRECTORY", "LOCATOR"],
 };

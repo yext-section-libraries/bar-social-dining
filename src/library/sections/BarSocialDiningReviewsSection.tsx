@@ -1,3 +1,4 @@
+import "../shared/typography.css";
 import type { SectionConfig } from "@yext/visual-editor";
 
 import type { PuckComponent } from "@puckeditor/core";
@@ -25,7 +26,6 @@ import {
   useDocument,
 } from "@yext/visual-editor";
 import {
-  getScopedTypographyCss,
   getTextStyle as textStyle,
   resolveTextColor,
 } from "../shared/sectionStyles";
@@ -60,7 +60,6 @@ const renderStars = (rating?: number): string => {
 };
 
 const reviewsScopeClass = "bar-social-dining-reviews";
-const reviewsScopedTypographyCss = getScopedTypographyCss(reviewsScopeClass);
 
 const BarSocialDiningReviewsSectionFields: YextFields<BarSocialDiningReviewsSectionProps> =
   {
@@ -120,11 +119,11 @@ const BarSocialDiningReviewsSectionFields: YextFields<BarSocialDiningReviewsSect
 const BarSocialDiningReviewsSectionComponent: PuckComponent<
   BarSocialDiningReviewsSectionProps
 > = ({ id, ...props }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const streamDocument = useDocument<
     StreamDocument & { ref_reviewsAgg?: ReviewAggregate[] }
   >();
-  const locale = streamDocument.locale ?? "en";
+  const locale = i18n.language;
   const resolvedHeading = resolveComponentData(
     props.heading.text,
     locale,
@@ -157,7 +156,6 @@ const BarSocialDiningReviewsSectionComponent: PuckComponent<
       <AnalyticsScopeProvider
         name={`BarSocialDiningReviewsSection${getAnalyticsScopeHash(id)}`}
       >
-        <style>{reviewsScopedTypographyCss}</style>
         <Background
           as="section"
           background={props.section.backgroundColor}
@@ -197,10 +195,8 @@ const BarSocialDiningReviewsSectionComponent: PuckComponent<
               </EntityField>
               <p
                 style={{
-                  fontSize: "0.75rem",
                   letterSpacing: "0.12em",
                   margin: "8px 0 0",
-                  textTransform: "uppercase",
                 }}
               >
                 {averageRating
@@ -212,10 +208,7 @@ const BarSocialDiningReviewsSectionComponent: PuckComponent<
                         reviewCount,
                       },
                     )
-                  : t(
-                      "noFirstPartyReviewsYet",
-                      "No first-party reviews yet",
-                    )}
+                  : t("noFirstPartyReviewsYet", "No first-party reviews yet")}
               </p>
             </div>
             {reviews.length ? (
@@ -244,7 +237,6 @@ const BarSocialDiningReviewsSectionComponent: PuckComponent<
                     <p
                       style={{
                         color: starColor,
-                        fontSize: "0.75rem",
                         letterSpacing: "0.3em",
                         margin: "0 0 18px",
                       }}
@@ -283,8 +275,7 @@ const BarSocialDiningReviewsSectionComponent: PuckComponent<
                         margin: 0,
                       }}
                     >
-                      {review.authorName ??
-                        t("anonymousReviewer", "Anonymous")}
+                      {review.authorName ?? t("anonymousReviewer", "Anonymous")}
                     </h3>
                     {review.reviewDate ? (
                       <p

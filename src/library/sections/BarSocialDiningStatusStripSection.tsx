@@ -1,3 +1,4 @@
+import "../shared/typography.css";
 import type { SectionConfig } from "@yext/visual-editor";
 
 import type { PuckComponent } from "@puckeditor/core";
@@ -20,7 +21,6 @@ import {
 } from "@yext/visual-editor";
 import type { HoursType, StatusParams } from "@yext/pages-components";
 import {
-  getScopedTypographyCss,
   getTextStyle as textStyle,
 } from "../shared/sectionStyles";
 
@@ -99,9 +99,6 @@ const renderStatusLabel = (
 };
 
 const statusStripScopeClass = "bar-social-dining-status-strip";
-const statusStripScopedTypographyCss = getScopedTypographyCss(
-  statusStripScopeClass,
-);
 
 const BarSocialDiningStatusStripSectionFields: YextFields<BarSocialDiningStatusStripSectionProps> =
   {
@@ -196,13 +193,13 @@ const BarSocialDiningStatusStripSectionFields: YextFields<BarSocialDiningStatusS
 const BarSocialDiningStatusStripSectionComponent: PuckComponent<
   BarSocialDiningStatusStripSectionProps
 > = (props) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const streamDocument = useDocument<{
     locale?: string;
     timezone?: string;
     comingSoon?: boolean;
   }>();
-  const locale = streamDocument.locale ?? "en";
+  const locale = i18n.language;
   const timezone =
     streamDocument.timezone ||
     Intl.DateTimeFormat().resolvedOptions().timeZone ||
@@ -217,7 +214,6 @@ const BarSocialDiningStatusStripSectionComponent: PuckComponent<
       liveVisibility={props.section.visibleOnLivePage}
       isEditing={props.puck.isEditing}
     >
-      <style>{statusStripScopedTypographyCss}</style>
       <Background
         as="section"
         background={props.section.backgroundColor}

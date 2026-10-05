@@ -1,3 +1,4 @@
+import "../shared/typography.css";
 import type { SectionConfig } from "@yext/visual-editor";
 
 import type { PuckComponent } from "@puckeditor/core";
@@ -30,10 +31,10 @@ import {
 import { createCta } from "../shared/createCta";
 import { aspectRatioOptions } from "../shared/fieldOptions";
 import {
-  getScopedTypographyCss,
   getTextStyle as textStyle,
   renderRichText,
 } from "../shared/sectionStyles";
+import { useTranslation } from "react-i18next";
 
 type StyledTextProps = {
   text: YextEntityField<TranslatableString>;
@@ -69,7 +70,6 @@ type BarSocialDiningHeroSectionProps = {
 };
 
 const heroScopeClass = "bar-social-dining-hero";
-const heroScopedTypographyCss = getScopedTypographyCss(heroScopeClass);
 
 const createHeroCta = (
   label: string,
@@ -107,7 +107,10 @@ const BarSocialDiningHeroSectionFields: YextFields<BarSocialDiningHeroSectionPro
           label: msg("fields.text", "Text"),
           filter: { types: ["type.string"] },
         },
-        styles: { label: msg("fields.textStyles", "Text Styles"), type: "styledText" },
+        styles: {
+          label: msg("fields.textStyles", "Text Styles"),
+          type: "styledText",
+        },
         fontColor: {
           label: msg("fields.fontColor", "Font Color"),
           type: "basicSelector",
@@ -124,7 +127,10 @@ const BarSocialDiningHeroSectionFields: YextFields<BarSocialDiningHeroSectionPro
           label: msg("fields.text", "Text"),
           filter: { types: ["type.string"] },
         },
-        styles: { label: msg("fields.textStyles", "Text Styles"), type: "styledText" },
+        styles: {
+          label: msg("fields.textStyles", "Text Styles"),
+          type: "styledText",
+        },
         fontColor: {
           label: msg("fields.fontColor", "Font Color"),
           type: "basicSelector",
@@ -141,7 +147,10 @@ const BarSocialDiningHeroSectionFields: YextFields<BarSocialDiningHeroSectionPro
           label: msg("fields.text", "Text"),
           filter: { types: ["type.rich_text_v2"] },
         },
-        styles: { label: msg("fields.textStyles", "Text Styles"), type: "styledText" },
+        styles: {
+          label: msg("fields.textStyles", "Text Styles"),
+          type: "styledText",
+        },
         fontColor: {
           label: msg("fields.fontColor", "Font Color"),
           type: "basicSelector",
@@ -195,7 +204,8 @@ const BarSocialDiningHeroSectionComponent: PuckComponent<
   BarSocialDiningHeroSectionProps
 > = ({ id, ...props }) => {
   const streamDocument = useDocument();
-  const locale = streamDocument.locale ?? "en";
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
   const resolvedEyebrow = resolveComponentData(
     props.eyebrow.text,
     locale,
@@ -245,7 +255,6 @@ const BarSocialDiningHeroSectionComponent: PuckComponent<
         name={`BarSocialDiningHeroSection${getAnalyticsScopeHash(id)}`}
       >
         <style>{`
-            ${heroScopedTypographyCss}
 
             .bar-social-dining-hero-grid {
               display: grid;
@@ -261,9 +270,9 @@ const BarSocialDiningHeroSectionComponent: PuckComponent<
               }
             }
           `}</style>
-      <Background
-        as="section"
-        background={props.section.backgroundColor}
+        <Background
+          as="section"
+          background={props.section.backgroundColor}
           className={heroScopeClass}
           style={{
             ...getSurfaceColorStyle(
@@ -310,7 +319,6 @@ const BarSocialDiningHeroSectionComponent: PuckComponent<
                       letterSpacing: "0.08em",
                       margin: "0 0 34px",
                       paddingBottom: "4px",
-                      textTransform: "uppercase",
                     }}
                   >
                     {typeof resolvedEyebrow === "string" ? resolvedEyebrow : ""}
@@ -350,7 +358,7 @@ const BarSocialDiningHeroSectionComponent: PuckComponent<
                       marginTop: "26px",
                     }}
                   >
-                    {renderRichText(resolvedBody)}
+                    {renderRichText(resolvedBody, props.body.styles)}
                   </div>
                 </EntityField>
                 <div
@@ -444,7 +452,7 @@ const BarSocialDiningHeroSectionComponent: PuckComponent<
               </EntityField>
             ) : null}
           </div>
-      </Background>
+        </Background>
       </AnalyticsScopeProvider>
     </VisibilityWrapper>
   );

@@ -1,3 +1,4 @@
+import "../shared/typography.css";
 import type { SectionConfig } from "@yext/visual-editor";
 
 import type { PuckComponent } from "@puckeditor/core";
@@ -28,11 +29,11 @@ import {
 import { aspectRatioOptions } from "../shared/fieldOptions";
 import {
   getReadableForegroundColor,
-  getScopedTypographyCss,
   getTextStyle as textStyle,
   hasExplicitThemeColor,
   renderRichText,
 } from "../shared/sectionStyles";
+import { useTranslation } from "react-i18next";
 
 type StyledTextProps = {
   text: YextEntityField<TranslatableString>;
@@ -180,7 +181,6 @@ type BarSocialDiningAboutSectionProps = {
 };
 
 const aboutScopeClass = "bar-social-dining-about";
-const aboutScopedTypographyCss = getScopedTypographyCss(aboutScopeClass);
 
 const BarSocialDiningAboutSectionFields: YextFields<BarSocialDiningAboutSectionProps> =
   {
@@ -274,7 +274,10 @@ const BarSocialDiningAboutSectionFields: YextFields<BarSocialDiningAboutSectionP
               type: "select",
               options: [
                 { label: msg("fields.options.fixed", "Fixed"), value: "fixed" },
-                { label: msg("fields.options.filled", "Filled"), value: "filled" },
+                {
+                  label: msg("fields.options.filled", "Filled"),
+                  value: "filled",
+                },
               ],
             },
             styles: {
@@ -291,7 +294,8 @@ const BarSocialDiningAboutSectionComponent: PuckComponent<
   BarSocialDiningAboutSectionProps
 > = ({ id, ...props }) => {
   const streamDocument = useDocument();
-  const locale = streamDocument.locale ?? "en";
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
   const resolvedHeading = resolveComponentData(
     props.heading.text,
     locale,
@@ -318,7 +322,6 @@ const BarSocialDiningAboutSectionComponent: PuckComponent<
         name={`BarSocialDiningAboutSection${getAnalyticsScopeHash(id)}`}
       >
         <style>{`
-          ${aboutScopedTypographyCss}
 
           @media (max-width: 1024px) {
             .bar-social-dining-about-grid {
@@ -326,9 +329,9 @@ const BarSocialDiningAboutSectionComponent: PuckComponent<
             }
           }
         `}</style>
-      <Background
-        as="section"
-        background={props.section.backgroundColor}
+        <Background
+          as="section"
+          background={props.section.backgroundColor}
           className={aboutScopeClass}
           style={{
             ...getSurfaceColorStyle(
@@ -487,7 +490,7 @@ const BarSocialDiningAboutSectionComponent: PuckComponent<
               </div>
             </EntityField>
           </div>
-      </Background>
+        </Background>
       </AnalyticsScopeProvider>
     </VisibilityWrapper>
   );

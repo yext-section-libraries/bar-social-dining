@@ -1,3 +1,4 @@
+import "../shared/typography.css";
 import type { SectionConfig } from "@yext/visual-editor";
 
 import { useState } from "react";
@@ -30,12 +31,12 @@ import {
 import { aspectRatioOptions } from "../shared/fieldOptions";
 import {
   getReadableForegroundColor,
-  getScopedTypographyCss,
   getTextStyle as textStyle,
   hasExplicitThemeColor,
   renderRichText,
   resolveTextColor,
 } from "../shared/sectionStyles";
+import { useTranslation } from "react-i18next";
 
 type StyledTextProps = {
   text: YextEntityField<TranslatableString>;
@@ -334,7 +335,6 @@ type BarSocialDiningFaqSectionProps = {
 };
 
 const faqScopeClass = "bar-social-dining-faq";
-const faqScopedTypographyCss = getScopedTypographyCss(faqScopeClass);
 
 const BarSocialDiningFaqSectionFields: YextFields<BarSocialDiningFaqSectionProps> =
   {
@@ -398,7 +398,10 @@ const BarSocialDiningFaqSectionFields: YextFields<BarSocialDiningFaqSectionProps
           label: msg("fields.question", "Question"),
           type: "object",
           objectFields: {
-            styles: { label: msg("fields.textStyles", "Text Styles"), type: "styledText" },
+            styles: {
+              label: msg("fields.textStyles", "Text Styles"),
+              type: "styledText",
+            },
             fontColor: {
               label: msg("fields.fontColor", "Font Color"),
               type: "basicSelector",
@@ -410,7 +413,10 @@ const BarSocialDiningFaqSectionFields: YextFields<BarSocialDiningFaqSectionProps
           label: msg("fields.answer", "Answer"),
           type: "object",
           objectFields: {
-            styles: { label: msg("fields.textStyles", "Text Styles"), type: "styledText" },
+            styles: {
+              label: msg("fields.textStyles", "Text Styles"),
+              type: "styledText",
+            },
             fontColor: {
               label: msg("fields.fontColor", "Font Color"),
               type: "basicSelector",
@@ -432,10 +438,16 @@ const BarSocialDiningFaqSectionFields: YextFields<BarSocialDiningFaqSectionProps
               type: "select",
               options: [
                 { label: msg("fields.options.fixed", "Fixed"), value: "fixed" },
-                { label: msg("fields.options.filled", "Filled"), value: "filled" },
+                {
+                  label: msg("fields.options.filled", "Filled"),
+                  value: "filled",
+                },
               ],
             },
-            styles: { label: msg("fields.imageStyles", "Image Styles"), type: "styledImage" },
+            styles: {
+              label: msg("fields.imageStyles", "Image Styles"),
+              type: "styledImage",
+            },
           },
         },
       },
@@ -447,7 +459,8 @@ const BarSocialDiningFaqSectionComponent: PuckComponent<
 > = ({ id, ...props }) => {
   const analytics = useAnalytics();
   const streamDocument = useDocument();
-  const locale = streamDocument.locale ?? "en";
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
   const questionForeground = resolveTextColor(
     undefined,
     props.questionBackgroundColor,
@@ -483,7 +496,6 @@ const BarSocialDiningFaqSectionComponent: PuckComponent<
         name={`BarSocialDiningFaqSection${getAnalyticsScopeHash(id)}`}
       >
         <style>{`
-            ${faqScopedTypographyCss}
 
             .bar-social-dining-faq-grid {
               display: grid;
@@ -502,9 +514,9 @@ const BarSocialDiningFaqSectionComponent: PuckComponent<
               }
             }
           `}</style>
-      <Background
-        as="section"
-        background={props.section.backgroundColor}
+        <Background
+          as="section"
+          background={props.section.backgroundColor}
           className={faqScopeClass}
           style={{
             ...getSurfaceColorStyle(
@@ -555,11 +567,7 @@ const BarSocialDiningFaqSectionComponent: PuckComponent<
                     { output: "plainText" },
                   );
                   const resolvedAnswer = item.answer
-                    ? resolveComponentData(
-                        item.answer,
-                        locale,
-                        streamDocument,
-                      )
+                    ? resolveComponentData(item.answer, locale, streamDocument)
                     : undefined;
                   const resolvedImage: unknown = item.image
                     ? resolveComponentData(item.image, locale, streamDocument)
@@ -639,6 +647,7 @@ const BarSocialDiningFaqSectionComponent: PuckComponent<
                         >
                           <div
                             aria-level={3}
+                            className="bar-social-dining-body"
                             role="heading"
                             style={{
                               ...textStyle(
@@ -732,7 +741,7 @@ const BarSocialDiningFaqSectionComponent: PuckComponent<
               </div>
             </EntityField>
           </div>
-      </Background>
+        </Background>
       </AnalyticsScopeProvider>
     </VisibilityWrapper>
   );

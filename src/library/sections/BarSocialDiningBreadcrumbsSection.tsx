@@ -1,3 +1,4 @@
+import "../shared/typography.css";
 import type { SectionConfig } from "@yext/visual-editor";
 
 import type { PuckComponent } from "@puckeditor/core";
@@ -146,8 +147,8 @@ const BarSocialDiningBreadcrumbsSectionComponent: PuckComponent<
   const { relativePrefixToRoot } = useTemplateProps<{
     relativePrefixToRoot?: string;
   }>();
-  const { t } = useTranslation();
-  const locale = streamDocument.locale ?? "en";
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language;
   const resolvedRootLabelValue = resolveComponentData(
     props.rootLabel.text,
     locale,
@@ -191,7 +192,6 @@ const BarSocialDiningBreadcrumbsSectionComponent: PuckComponent<
     return props.puck.isEditing ? (
       <p
         style={{
-          fontFamily: "Arial, Helvetica, sans-serif",
           padding: "18px 24px",
         }}
       >
@@ -396,7 +396,7 @@ export const BarSocialDiningBreadcrumbsSection: YextComponentConfig<BarSocialDin
           fontSize: "default",
           fontWeight: "default",
           fontStyle: "default",
-          textTransform: "uppercase",
+          textTransform: "default",
         },
         fontColor: undefined,
       },

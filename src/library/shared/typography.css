@@ -1,0 +1,210 @@
+/* Theme tokens are scoped to .components and reset on nested components.
+ * Keep field overrides in separate inherited properties. Exclude the Puck
+ * shell document; its preview iframe and live sections use the same rules. */
+:where(:root:not(:has(.Puck))) {
+  :where(section, header, footer, nav),
+  p,
+  .components p,
+  li,
+  .components li,
+  .bar-social-dining-body,
+  .components:where(section, header, footer, nav),
+  .components.components.bar-social-dining-text:where(:not(h1, h2, h3, h4, h5, h6)),
+  .components.components.font-body-fontFamily,
+  .components.components .font-body-fontFamily,
+  .body-medium,
+  .HoursTable-day,
+  .HoursTable-intervals,
+  .rtf-wrapper,
+  input:where(:not([type="button"], [type="submit"], [type="reset"])),
+  textarea,
+  select {
+    font-family: var(--bar-social-dining-body-fontFamily, var(--fontFamily-body-fontFamily));
+    font-size: var(--bar-social-dining-body-fontSize, var(--fontSize-body-fontSize));
+    line-height: 1.5;
+    font-weight: var(--bar-social-dining-body-fontWeight, var(--fontWeight-body-fontWeight));
+    font-style: var(--bar-social-dining-body-fontStyle, var(--fontStyle-body-fontStyle));
+    text-transform: var(--bar-social-dining-body-textTransform, var(--textTransform-body-textTransform));
+  }
+
+  /* Match the platform heading utilities while retaining inline overrides.
+   * Responsive font classes must not replace a native heading's role. */
+  h1,
+  .components h1,
+  .components.components:is(h1),
+  .components.font-h1-fontFamily:where(:not(h1, h2, h3, h4, h5, h6)) {
+    font-family: var(--fontFamily-h1-fontFamily);
+    font-size: var(--fontSize-h1-fontSize);
+    line-height: 1.2;
+    font-weight: var(--fontWeight-h1-fontWeight);
+    font-style: var(--fontStyle-h1-fontStyle);
+    text-transform: var(--textTransform-h1-textTransform);
+  }
+
+  h2,
+  .components h2,
+  .components.components:is(h2),
+  .components.font-h2-fontFamily:where(:not(h1, h2, h3, h4, h5, h6)) {
+    font-family: var(--fontFamily-h2-fontFamily);
+    font-size: var(--fontSize-h2-fontSize);
+    line-height: 1.2;
+    font-weight: var(--fontWeight-h2-fontWeight);
+    font-style: var(--fontStyle-h2-fontStyle);
+    text-transform: var(--textTransform-h2-textTransform);
+  }
+
+  h3,
+  .components h3,
+  .components.components:is(h3),
+  .components.font-h3-fontFamily:where(:not(h1, h2, h3, h4, h5, h6)) {
+    font-family: var(--fontFamily-h3-fontFamily);
+    font-size: var(--fontSize-h3-fontSize);
+    line-height: 1.2;
+    font-weight: var(--fontWeight-h3-fontWeight);
+    font-style: var(--fontStyle-h3-fontStyle);
+    text-transform: var(--textTransform-h3-textTransform);
+  }
+
+  h4,
+  .components h4,
+  .components.components:is(h4),
+  .components.font-h4-fontFamily:where(:not(h1, h2, h3, h4, h5, h6)) {
+    font-family: var(--fontFamily-h4-fontFamily);
+    font-size: var(--fontSize-h4-fontSize);
+    line-height: 1.2;
+    font-weight: var(--fontWeight-h4-fontWeight);
+    font-style: var(--fontStyle-h4-fontStyle);
+    text-transform: var(--textTransform-h4-textTransform);
+  }
+
+  h5,
+  .components h5,
+  .components.components:is(h5),
+  .components.font-h5-fontFamily:where(:not(h1, h2, h3, h4, h5, h6)) {
+    font-family: var(--fontFamily-h5-fontFamily);
+    font-size: var(--fontSize-h5-fontSize);
+    line-height: 1.2;
+    font-weight: var(--fontWeight-h5-fontWeight);
+    font-style: var(--fontStyle-h5-fontStyle);
+    text-transform: var(--textTransform-h5-textTransform);
+  }
+
+  h6,
+  .components h6,
+  .components.components:is(h6),
+  .components.font-h6-fontFamily:where(:not(h1, h2, h3, h4, h5, h6)) {
+    font-family: var(--fontFamily-h6-fontFamily);
+    font-size: var(--fontSize-h6-fontSize);
+    line-height: 1.2;
+    font-weight: var(--fontWeight-h6-fontWeight);
+    font-style: var(--fontStyle-h6-fontStyle);
+    text-transform: var(--textTransform-h6-textTransform);
+  }
+
+  a,
+  .components a,
+  .components:where(a),
+  .components.font-link-fontFamily,
+  .bar-social-dining-link,
+  a .components.bar-social-dining-text,
+  a .components.bar-social-dining-body {
+    font-family: var(--fontFamily-link-fontFamily);
+    font-size: var(--fontSize-link-fontSize);
+    line-height: 1.5;
+    font-weight: var(--fontWeight-link-fontWeight);
+    font-style: var(--fontStyle-link-fontStyle);
+    text-transform: var(--textTransform-link-textTransform);
+    letter-spacing: var(--letterSpacing-link-letterSpacing);
+  }
+
+  button,
+  .components button,
+  [role="button"],
+  .components:where(button),
+  input:where([type="button"], [type="submit"], [type="reset"]),
+  .components.font-button-fontFamily {
+    font-family: var(--fontFamily-button-fontFamily);
+    font-size: var(--fontSize-button-fontSize);
+    line-height: 1.5;
+    font-weight: var(--fontWeight-button-fontWeight);
+    font-style: var(--fontStyle-button-fontStyle);
+    text-transform: var(--textTransform-button-textTransform);
+    letter-spacing: var(--letterSpacing-button-letterSpacing);
+  }
+
+  /* The platform RTF stylesheet uses !important and responsive heading
+   * substitutions. Match its priority only here; fields override body variables
+   * on the renderer instead of competing with these declarations. */
+  .rtf-theme.rtf-theme p,
+  .rtf-theme.rtf-theme li {
+    font-family: var(--bar-social-dining-body-fontFamily, var(--fontFamily-body-fontFamily)) !important;
+    font-size: var(--bar-social-dining-body-fontSize, var(--fontSize-body-fontSize)) !important;
+    line-height: 1.5 !important;
+    font-weight: var(--bar-social-dining-body-fontWeight, var(--fontWeight-body-fontWeight)) !important;
+    font-style: var(--bar-social-dining-body-fontStyle, var(--fontStyle-body-fontStyle)) !important;
+    text-transform: var(--bar-social-dining-body-textTransform, var(--textTransform-body-textTransform)) !important;
+  }
+
+  .rtf-theme.rtf-theme h1 {
+    font-family: var(--fontFamily-h1-fontFamily) !important;
+    font-size: var(--fontSize-h1-fontSize) !important;
+    line-height: 1.2 !important;
+    font-weight: var(--fontWeight-h1-fontWeight) !important;
+    font-style: var(--fontStyle-h1-fontStyle) !important;
+    text-transform: var(--textTransform-h1-textTransform) !important;
+  }
+
+  .rtf-theme.rtf-theme h2 {
+    font-family: var(--fontFamily-h2-fontFamily) !important;
+    font-size: var(--fontSize-h2-fontSize) !important;
+    line-height: 1.2 !important;
+    font-weight: var(--fontWeight-h2-fontWeight) !important;
+    font-style: var(--fontStyle-h2-fontStyle) !important;
+    text-transform: var(--textTransform-h2-textTransform) !important;
+  }
+
+  .rtf-theme.rtf-theme h3 {
+    font-family: var(--fontFamily-h3-fontFamily) !important;
+    font-size: var(--fontSize-h3-fontSize) !important;
+    line-height: 1.2 !important;
+    font-weight: var(--fontWeight-h3-fontWeight) !important;
+    font-style: var(--fontStyle-h3-fontStyle) !important;
+    text-transform: var(--textTransform-h3-textTransform) !important;
+  }
+
+  .rtf-theme.rtf-theme h4 {
+    font-family: var(--fontFamily-h4-fontFamily) !important;
+    font-size: var(--fontSize-h4-fontSize) !important;
+    line-height: 1.2 !important;
+    font-weight: var(--fontWeight-h4-fontWeight) !important;
+    font-style: var(--fontStyle-h4-fontStyle) !important;
+    text-transform: var(--textTransform-h4-textTransform) !important;
+  }
+
+  .rtf-theme.rtf-theme h5 {
+    font-family: var(--fontFamily-h5-fontFamily) !important;
+    font-size: var(--fontSize-h5-fontSize) !important;
+    line-height: 1.2 !important;
+    font-weight: var(--fontWeight-h5-fontWeight) !important;
+    font-style: var(--fontStyle-h5-fontStyle) !important;
+    text-transform: var(--textTransform-h5-textTransform) !important;
+  }
+
+  .rtf-theme.rtf-theme h6 {
+    font-family: var(--fontFamily-h6-fontFamily) !important;
+    font-size: var(--fontSize-h6-fontSize) !important;
+    line-height: 1.2 !important;
+    font-weight: var(--fontWeight-h6-fontWeight) !important;
+    font-style: var(--fontStyle-h6-fontStyle) !important;
+    text-transform: var(--textTransform-h6-textTransform) !important;
+  }
+
+  .rtf-theme.rtf-theme a {
+    font-family: var(--fontFamily-link-fontFamily) !important;
+    font-size: var(--fontSize-link-fontSize) !important;
+    line-height: 1.5 !important;
+    font-weight: var(--fontWeight-link-fontWeight) !important;
+    font-style: var(--fontStyle-link-fontStyle) !important;
+    text-transform: var(--textTransform-link-textTransform) !important;
+  }
+}

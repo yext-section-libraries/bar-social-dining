@@ -1,3 +1,4 @@
+import "../shared/typography.css";
 import type { SectionConfig } from "@yext/visual-editor";
 
 import * as React from "react";
@@ -42,6 +43,7 @@ import {
   getReadableForegroundColor,
   hasExplicitThemeColor,
 } from "../shared/sectionStyles";
+import { useTranslation } from "react-i18next";
 
 type SharedHeaderVariant =
   | "centerLogoSplitNav"
@@ -610,7 +612,8 @@ const BarSocialDiningHeaderSectionComponent: PuckComponent<
 > = (props) => {
   const analytics = useAnalytics();
   const streamDocument = useDocument<StreamDocument>();
-  const locale = streamDocument.locale ?? "en";
+  const { i18n } = useTranslation();
+  const locale = i18n.language;
   const [menuOpen, setMenuOpen] = React.useState(false);
 
   const resolvedLogoImage = resolveComponentData(
@@ -872,7 +875,7 @@ const BarSocialDiningHeaderSectionComponent: PuckComponent<
         {!resolvedLogoImage ? (
           props.puck.isEditing && (
             <div
-              className="flex items-center justify-center rounded border border-dashed border-current/30 text-[10px] font-medium text-center"
+              className="flex items-center justify-center rounded border border-dashed border-current/30 text-center"
               style={{
                 height: "50px",
                 width:
