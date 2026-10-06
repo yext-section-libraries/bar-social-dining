@@ -201,7 +201,7 @@ const BarSocialDiningBannerComponent: PuckComponent<
  */
 export const BarSocialDiningBanner: YextComponentConfig<BarSocialDiningBannerProps> =
   {
-    label: "Banner Section",
+    label: "Banner",
     fields: toPuckFields<BarSocialDiningBannerProps>(
       BarSocialDiningBannerFields,
     ),
@@ -242,7 +242,7 @@ export const BarSocialDiningBanner: YextComponentConfig<BarSocialDiningBannerPro
 
 export const config: SectionConfig = {
   id: "BarSocialDiningBanner",
-  displayName: "Banner Section",
+  displayName: "Banner",
   description: "Banner",
   pageSetTypes: ["ENTITY", "DIRECTORY", "LOCATOR"],
 };

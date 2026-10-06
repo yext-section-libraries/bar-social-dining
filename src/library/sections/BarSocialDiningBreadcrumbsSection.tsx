@@ -370,7 +370,7 @@ const BarSocialDiningBreadcrumbsSectionComponent: PuckComponent<
 
 export const BarSocialDiningBreadcrumbsSection: YextComponentConfig<BarSocialDiningBreadcrumbsSectionProps> =
   {
-    label: "Breadcrumbs Section",
+    label: "Breadcrumbs",
     fields: toPuckFields<BarSocialDiningBreadcrumbsSectionProps>(
       BarSocialDiningBreadcrumbsSectionFields,
     ),
@@ -409,7 +409,7 @@ export const BarSocialDiningBreadcrumbsSection: YextComponentConfig<BarSocialDin
 
 export const config: SectionConfig = {
   id: "BarSocialDiningBreadcrumbsSection",
-  displayName: "Breadcrumbs Section",
+  displayName: "Breadcrumbs",
   description: "Breadcrumbs Section",
   pageSetTypes: ["ENTITY"],
 };

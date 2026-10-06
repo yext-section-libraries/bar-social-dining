@@ -327,7 +327,7 @@ const BarSocialDiningNearbyLocationsSectionComponent: PuckComponent<
 
 export const BarSocialDiningNearbyLocationsSection: YextComponentConfig<BarSocialDiningNearbyLocationsSectionProps> =
   {
-    label: "Nearby Locations Section",
+    label: "Nearby Locations",
     fields: toPuckFields<BarSocialDiningNearbyLocationsSectionProps>(
       BarSocialDiningNearbyLocationsSectionFields,
     ),
@@ -371,7 +371,7 @@ export const BarSocialDiningNearbyLocationsSection: YextComponentConfig<BarSocia
 
 export const config: SectionConfig = {
   id: "BarSocialDiningNearbyLocationsSection",
-  displayName: "Nearby Locations Section",
+  displayName: "Nearby Locations",
   description: "Nearby Locations Section",
   pageSetTypes: ["ENTITY"],
 };
