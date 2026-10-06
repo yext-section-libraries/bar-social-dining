@@ -710,7 +710,7 @@ const BarSocialDiningMenuSectionComponent: PuckComponent<
 
 export const BarSocialDiningMenuSection: YextComponentConfig<BarSocialDiningMenuSectionProps> =
   {
-    label: "Menu Section",
+    label: "Menu",
     fields: BarSocialDiningMenuSectionFields,
     defaultProps: {
       section: {
@@ -793,7 +793,7 @@ export const BarSocialDiningMenuSection: YextComponentConfig<BarSocialDiningMenu
 
 export const config: SectionConfig = {
   id: "BarSocialDiningMenuSection",
-  displayName: "Menu Section",
+  displayName: "Menu",
   description: "Menu Section",
   pageSetTypes: ["ENTITY"],
 };

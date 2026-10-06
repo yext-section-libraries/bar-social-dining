@@ -138,7 +138,7 @@ const BarSocialDiningMapSectionComponent: PuckComponent<
 
 export const BarSocialDiningMapSection: YextComponentConfig<BarSocialDiningMapSectionProps> =
   {
-    label: "Map Section",
+    label: "Map",
     fields: toPuckFields<BarSocialDiningMapSectionProps>(
       BarSocialDiningMapSectionFields,
     ),
@@ -169,7 +169,7 @@ export const BarSocialDiningMapSection: YextComponentConfig<BarSocialDiningMapSe
 
 export const config: SectionConfig = {
   id: "BarSocialDiningMapSection",
-  displayName: "Map Section",
+  displayName: "Map",
   description: "Map Section",
   pageSetTypes: ["ENTITY"],
 };

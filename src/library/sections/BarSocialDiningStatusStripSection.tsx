@@ -280,7 +280,7 @@ const BarSocialDiningStatusStripSectionComponent: PuckComponent<
 
 export const BarSocialDiningStatusStripSection: YextComponentConfig<BarSocialDiningStatusStripSectionProps> =
   {
-    label: "Status Strip Section",
+    label: "Status Strip",
     fields: toPuckFields<BarSocialDiningStatusStripSectionProps>(
       BarSocialDiningStatusStripSectionFields,
     ),
@@ -321,7 +321,7 @@ export const BarSocialDiningStatusStripSection: YextComponentConfig<BarSocialDin
 
 export const config: SectionConfig = {
   id: "BarSocialDiningStatusStripSection",
-  displayName: "Status Strip Section",
+  displayName: "Status Strip",
   description: "Status Strip Section",
   pageSetTypes: ["ENTITY"],
 };

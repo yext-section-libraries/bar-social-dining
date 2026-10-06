@@ -851,7 +851,7 @@ const BarSocialDiningDetailsSectionComponent: PuckComponent<
 
 export const BarSocialDiningDetailsSection: YextComponentConfig<BarSocialDiningDetailsSectionProps> =
   {
-    label: "Details Section",
+    label: "Details",
     fields: toPuckFields<BarSocialDiningDetailsSectionProps>(
       BarSocialDiningDetailsSectionFields,
     ),
@@ -1015,7 +1015,7 @@ export const BarSocialDiningDetailsSection: YextComponentConfig<BarSocialDiningD
 
 export const config: SectionConfig = {
   id: "BarSocialDiningDetailsSection",
-  displayName: "Details Section",
+  displayName: "Details",
   description: "Details Section",
   pageSetTypes: ["ENTITY"],
 };
