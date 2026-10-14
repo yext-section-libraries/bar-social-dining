@@ -332,5 +332,6 @@
   "untilTime": "Iki {{time}}{{day}}",
   "useOurLocatorToFindALocationNearYou": "Naudokite mūsų ieškiklį, kad rastumėte vietą šalia jūsų",
   "visitPage": "Apsilankykite puslapyje",
-  "visitPageForName": "Apsilankykite puslapyje {{name}}"
+  "visitPageForName": "Apsilankykite puslapyje {{name}}",
+  "mapRequiresWebGL": "Žemėlapis nepasiekiamas, nes WebGL nepasiekiamas."
 }
