@@ -322,5 +322,6 @@
   "untilTime": "Till {{time}}{{day}}",
   "useOurLocatorToFindALocationNearYou": "Använd vår lokalisering för att hitta en plats nära dig",
   "visitPage": "Besöka sidan",
-  "visitPageForName": "Besök sidan för {{name}}"
+  "visitPageForName": "Besök sidan för {{name}}",
+  "mapRequiresWebGL": "Kartan är inte tillgänglig eftersom WebGL inte är tillgängligt."
 }
