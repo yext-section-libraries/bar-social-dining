@@ -39,6 +39,7 @@
     "answer": "回答",
     "answerBackgroundColor": "回答の背景色",
     "aspectRatio": "アスペクト比",
+    "autoSearchOnMapMove": "地図移動時に自動検索",
     "backgroundColor": "背景色",
     "bannerImage": "バナー画像",
     "bannerText": "バナーテキスト",

@@ -39,6 +39,7 @@
     "answer": "Svar",
     "answerBackgroundColor": "Bakgrundsfärg för svar",
     "aspectRatio": "Bildförhållande",
+    "autoSearchOnMapMove": "Sök automatiskt på kartrörelse",
     "backgroundColor": "Bakgrundsfärg",
     "bannerImage": "Bannerbild",
     "bannerText": "Bannertext",

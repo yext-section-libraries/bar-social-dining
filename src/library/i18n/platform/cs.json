@@ -39,6 +39,7 @@
     "answer": "Odpověď",
     "answerBackgroundColor": "Barva pozadí odpovědi",
     "aspectRatio": "Poměr stran",
+    "autoSearchOnMapMove": "Automaticky hledat při pohybu na mapě",
     "backgroundColor": "Barva pozadí",
     "bannerImage": "Obrázek banneru",
     "bannerText": "Text banneru",

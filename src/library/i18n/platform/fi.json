@@ -39,6 +39,7 @@
     "answer": "Vastaus",
     "answerBackgroundColor": "Vastauksen taustaväri",
     "aspectRatio": "Kuvasuhde",
+    "autoSearchOnMapMove": "Hae automaattisesti kartan liikkeestä",
     "backgroundColor": "Taustaväri",
     "bannerImage": "Bannerikuva",
     "bannerText": "Banneriteksti",

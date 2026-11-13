@@ -39,6 +39,7 @@
     "answer": "Atsakymas",
     "answerBackgroundColor": "Atsakymo fono spalva",
     "aspectRatio": "Kraštinių santykis",
+    "autoSearchOnMapMove": "Automatiškai ieškoti judėjimo žemėlapyje",
     "backgroundColor": "Fono spalva",
     "bannerImage": "Reklamjuostės vaizdas",
     "bannerText": "Reklamjuostės tekstas",

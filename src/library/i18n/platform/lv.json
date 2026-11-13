@@ -39,6 +39,7 @@
     "answer": "Atbilde",
     "answerBackgroundColor": "Atbildes fona krāsa",
     "aspectRatio": "Malu attiecība",
+    "autoSearchOnMapMove": "Automātiski meklēt kartē kustību",
     "backgroundColor": "Fona krāsa",
     "bannerImage": "Reklāmkaroga attēls",
     "bannerText": "Reklāmkaroga teksts",

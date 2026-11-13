@@ -39,6 +39,7 @@
     "answer": "Réponse",
     "answerBackgroundColor": "Couleur d’arrière-plan de la réponse",
     "aspectRatio": "Rapport d'aspect",
+    "autoSearchOnMapMove": "Recherche automatique sur le mouvement de la carte",
     "backgroundColor": "Couleur de fond",
     "bannerImage": "Image de bannière",
     "bannerText": "Texte de bannière",
