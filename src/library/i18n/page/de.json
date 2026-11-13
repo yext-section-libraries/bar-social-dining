@@ -33,6 +33,7 @@
   "locationsWithinDistanceOf_one": "{{count}} Standort im Umkreis von {{distance}} {{unit}} von „{{name}}“",
   "locationsWithinDistanceOf_other": "{{count}} Standorte im Umkreis von {{distance}} {{unit}} von „{{name}}“",
   "mapRequiresOptIn": "Diese Karte kann nur angezeigt werden, wenn Cookies aktiviert sind",
+  "mapRequiresWebGL": "Die Karte ist nicht verfügbar, weil WebGL nicht verfügbar ist.",
   "mile_one": "Meile",
   "mile_other": "Meilen",
   "mile_zero": "Meile",
