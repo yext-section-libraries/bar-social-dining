@@ -39,6 +39,7 @@
     "answer": "Yanıt",
     "answerBackgroundColor": "Yanıt Arka Plan Rengi",
     "aspectRatio": "En boy oranı",
+    "autoSearchOnMapMove": "Harita Hareketinde Otomatik Arama",
     "backgroundColor": "Arka plan rengi",
     "bannerImage": "Banner Görseli",
     "bannerText": "Banner Metni",

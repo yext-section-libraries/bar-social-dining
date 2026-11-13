@@ -39,6 +39,7 @@
     "answer": "Antwoord",
     "answerBackgroundColor": "Achtergrondkleur van antwoord",
     "aspectRatio": "Beeldverhouding",
+    "autoSearchOnMapMove": "Automatisch zoeken op kaartbeweging",
     "backgroundColor": "Achtergrondkleur",
     "bannerImage": "Bannerafbeelding",
     "bannerText": "Bannertekst",

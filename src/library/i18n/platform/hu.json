@@ -39,6 +39,7 @@
     "answer": "Válasz",
     "answerBackgroundColor": "Válasz háttérszíne",
     "aspectRatio": "Oldal arány",
+    "autoSearchOnMapMove": "Automatikus keresés a térképen, mozgás",
     "backgroundColor": "Háttérszín",
     "bannerImage": "Szalagkép",
     "bannerText": "Szalagszöveg",

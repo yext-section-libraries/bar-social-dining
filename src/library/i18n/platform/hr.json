@@ -39,6 +39,7 @@
     "answer": "Odgovor",
     "answerBackgroundColor": "Boja pozadine odgovora",
     "aspectRatio": "Omjer slike",
+    "autoSearchOnMapMove": "Automatsko pretraživanje po kretanju karte",
     "backgroundColor": "Boja pozadine",
     "bannerImage": "Slika natpisa",
     "bannerText": "Tekst natpisa",
