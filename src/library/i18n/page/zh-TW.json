@@ -29,6 +29,7 @@
   "locationsNear_other": "“{{name}}”附近有 {{count}} 個位置",
   "locationsWithinDistanceOf_other": "“{{name}}”的 {{distance}} {{unit}} 內有 {{count}} 個位置",
   "mapRequiresOptIn": "該地圖僅在啟用cookies的情況下才能顯示",
+  "mapRequiresWebGL": "由於 WebGL 無法使用，無法顯示地圖。",
   "mile_other": "英里",
   "mile_zero": "英里",
   "noFirstPartyReviewContentYet": "暫無第一方評論內容。",

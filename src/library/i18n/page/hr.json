@@ -37,6 +37,7 @@
   "locationsWithinDistanceOf_one": "{{count}} lokacija unutar {{distance}} {{unit}} od \"{{name}}\"",
   "locationsWithinDistanceOf_other": "{{count}} lokacija unutar {{distance}} {{unit}} od \"{{name}}\"",
   "mapRequiresOptIn": "Ova se karta može prikazati samo ako su omogućeni kolačići",
+  "mapRequiresWebGL": "Karta nije dostupna jer WebGL nije dostupan.",
   "mile_few": "milje",
   "mile_one": "milja",
   "mile_other": "milja",

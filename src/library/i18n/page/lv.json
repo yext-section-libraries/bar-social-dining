@@ -36,6 +36,7 @@
   "locationsWithinDistanceOf_other": "{{count}} atrašanās vietas {{distance}} {{unit}} rādiusā no \"{{name}}\"",
   "locationsWithinDistanceOf_zero": "{{count}} atrašanās vietas {{distance}} {{unit}} rādiusā no \"{{name}}\"",
   "mapRequiresOptIn": "Šo karti var parādīt tikai tad, ja ir iespējoti sīkfaili",
+  "mapRequiresWebGL": "Karte nav pieejama, jo WebGL nav pieejams.",
   "mile_one": "jūdze",
   "mile_other": "jūdzes",
   "mile_zero": "jūdzes",

@@ -37,6 +37,7 @@
   "locationsWithinDistanceOf_one": "{{count}} posizione entro {{distance}} {{unit}} di \"{{name}}\"",
   "locationsWithinDistanceOf_other": "{{count}} località entro {{distance}} {{unit}} di \"{{name}}\"",
   "mapRequiresOptIn": "Questa mappa può essere visualizzata solo se i cookie sono abilitati",
+  "mapRequiresWebGL": "La mappa non è disponibile perché WebGL non è disponibile.",
   "mile_many": "miglia",
   "mile_one": "miglio",
   "mile_other": "miglia",

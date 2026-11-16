@@ -33,6 +33,7 @@
   "locationsWithinDistanceOf_one": "{{count}} hely a(z) \"{{name}}\" {{distance}} {{unit}}-án belül",
   "locationsWithinDistanceOf_other": "{{count}} hely {{distance}} {{unit}}-on belül a következőtől: \"{{name}}\"",
   "mapRequiresOptIn": "Ez a térkép csak akkor jeleníthető meg, ha a cookie-k engedélyezve vannak",
+  "mapRequiresWebGL": "A térkép nem érhető el, mert a WebGL nem érhető el.",
   "mile_one": "mérföld",
   "mile_other": "mérföld",
   "mile_zero": "mérföld",
